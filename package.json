@@ -4,16 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:backend": "pnpm -F backend run start:dev ",
+    "dev:frontend": "pnpm -F frontend run dev ",
+    "dev:all": "pnpm run dev:backend & pnpm run dev:frontend"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.22.0",
-  "dependencies": {
-    "aedes": "^1.0.2",
-    "axios": "^1.13.6",
-    "mqtt": "^5.15.1",
-    "net": "^1.0.2"
-  }
+  "packageManager": "pnpm@10.22.0"
 }
