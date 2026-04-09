@@ -1,0 +1,4 @@
+#este archivo define el root del proyecto y te permite agregar directorios
+packages:
+  - 'backend'
+  - 'frontend'
