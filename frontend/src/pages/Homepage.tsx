@@ -1,4 +1,7 @@
 import TransactionHistory from "../components/TransactionHistory.tsx";
+import Sidebar from "../components/Sidebar.tsx";
+import SummaryCard from "../components/SummaryCard.tsx";
+import {Wallet, TrendingUp} from 'lucide-react';
 
 export default function Homepage() {
     return (
@@ -32,23 +35,19 @@ export default function Homepage() {
 
                     {/* Tarjetas de Resumen (Stats de DaisyUI) */}
                     <div className="stats stats-vertical md:stats-horizontal shadow w-full border border-base-300">
-                        <div className="stat">
-                            <div className="stat-figure text-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-8 h-8 stroke-current"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                            </div>
-                            <div className="stat-title">Saldo Disponible</div>
-                            <div className="stat-value text-primary">$ 45,231.89</div>
-                            <div className="stat-desc">Actualizado hace 5 minutos</div>
-                        </div>
 
-                        <div className="stat">
-                            <div className="stat-figure text-success">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-8 h-8 stroke-current"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                            </div>
-                            <div className="stat-title">Ingresos este mes</div>
-                            <div className="stat-value text-success">$ 120,500</div>
-                            <div className="stat-desc">↗︎ 14% más que el mes pasado</div>
-                        </div>
+                        <SummaryCard title={"Saldo Disponible"} amount={45231.89} icon={Wallet} textStyle={"text-primary"}/>
+
+                        <SummaryCard title={"Ingresos este mes"} amount={120500} icon={TrendingUp} textStyle={"text-success"}/>
+
+                        {/*<div className="stat">*/}
+                        {/*    <div className="stat-figure text-success">*/}
+                        {/*        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-8 h-8 stroke-current"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>*/}
+                        {/*    </div>*/}
+                        {/*    <div className="stat-title">Ingresos este mes</div>*/}
+                        {/*    <div className="stat-value text-success">$ 120,500</div>*/}
+                        {/*    <div className="stat-desc">↗︎ 14% más que el mes pasado</div>*/}
+                        {/*</div>*/}
                     </div>
 
                     {/* Contenedor del Historial */}
@@ -58,20 +57,7 @@ export default function Homepage() {
                 </div>
             </div>
 
-            {/* SIDEBAR (Menú Lateral) */}
-            <div className="drawer-side z-10">
-                <label htmlFor="dashboard-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-                <ul className="menu p-4 w-72 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col gap-2">
-                    <div className="text-2xl font-black text-primary p-4 mb-4 hidden lg:block">MiBanco</div>
-                    <li><a className="active font-semibold">🏠 Inicio</a></li>
-                    <li><a>💸 Transferencias</a></li>
-                    <li><a>💳 Tarjetas</a></li>
-                    <li><a>📊 Inversiones</a></li>
-                    <div className="divider"></div>
-                    <li><a>⚙️ Configuración</a></li>
-                    <li className="mt-auto"><a>🚪 Cerrar Sesión</a></li>
-                </ul>
-            </div>
+            <Sidebar/>
         </div>
     );
 }
