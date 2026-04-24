@@ -3,8 +3,9 @@ interface SummaryCardProps {
     amount: number,
     icon: React.ElementType,
     textStyle: string,
+    info: string,
 }
-export default function SummaryCard({title, amount, icon: Icon, textStyle}: SummaryCardProps) {
+export default function SummaryCard({title, amount, icon: Icon, textStyle, info}: SummaryCardProps) {
     return (
         <div className="stat">
             <div className={`stat-figure ${textStyle}`}>
@@ -12,7 +13,7 @@ export default function SummaryCard({title, amount, icon: Icon, textStyle}: Summ
             </div>
             <div className="stat-title">{title}</div>
             <div className={`stat-value ${textStyle}`}>$ {amount} </div>
-            <div className="stat-desc">Actualizado hace 5 minutos</div>
+            <div className="stat-desc">{info}</div>
         </div>
     );
 }
