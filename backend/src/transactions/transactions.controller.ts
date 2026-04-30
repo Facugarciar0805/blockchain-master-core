@@ -10,10 +10,11 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService, private authGuard: AuthGuard) {}
 
   @Post()
+  @UseGuards(AuthGuard)
+
   create(@Req() req: Request, @Body() createTransactionDto: CreateTransactionDto) {
-      //TODO DESCOMENTAR ESTO Y PONER EL GUARD
-    //const sender: number = req.user.sub;
-      const sender = 1
+    const sender: number = req.user.sub;
+      //const sender = 1
     return this.transactionsService.create(sender, createTransactionDto);
   }
 
