@@ -5,11 +5,11 @@ import {TransactionsRepositoryService} from "../repository/transactions/transact
 
 @Injectable()
 export class TransactionsService {
-    constructor(private transactionsRepository: TransactionsRepositoryService) {
-    }
+  constructor(private transactionsRepository: TransactionsRepositoryService) {
+  }
 
   create(sender: number, createTransactionDto: CreateTransactionDto) {
-    return this;
+    return this.transactionsRepository.create(sender, createTransactionDto);
   }
 
   findAll(user: number) {
