@@ -10,7 +10,7 @@ export class UserRepositoryService {
     }
     async findByEmail(email: string) {
         const response = await firstValueFrom(
-            this.httpService.get(`${process.env.DATABASE_URL}/user`, {params: email})
+            this.httpService.get(`${process.env.DATABASE_URL}/user`, {params: {email}})
         );
         return response.data;
     }
@@ -29,7 +29,7 @@ export class UserRepositoryService {
     }
     async findById(userId: number) {
         const response = await firstValueFrom(
-            this.httpService.get(`${process.env.DATABASE_URL}/user`, {params: userId})
+            this.httpService.get(`${process.env.DATABASE_URL}/user`, {params: {userId}})
         );
         return response.data;
     }
@@ -42,7 +42,7 @@ export class UserRepositoryService {
     }
     async remove(userId: number){
         const response = await firstValueFrom(
-            this.httpService.delete(`${process.env.DATABASE_URL}/user`, {params: userId})
+            this.httpService.delete(`${process.env.DATABASE_URL}/user`, {params: {userId}})
         )
         return response.data;
     }
