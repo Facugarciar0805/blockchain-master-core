@@ -1,12 +1,15 @@
-import {IsDefined, IsNumber, IsString} from "class-validator";
+import {IsDefined, IsNotEmpty, IsNumber, IsOptional, IsString} from "class-validator";
 
 export class CreateTransactionDto {
-    @IsString()
+    @IsNumber()
     @IsDefined()
     receiver: string;
 
     @IsNumber()
     @IsDefined()
     amount: number;
+    @IsString()
+    @IsNotEmpty()
+    @IsOptional()
     description?: string;
 }
