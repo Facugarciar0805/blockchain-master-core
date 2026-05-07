@@ -1,5 +1,4 @@
 import TransactionHistory from "../components/TransactionHistory.tsx";
-import Sidebar from "../components/Sidebar.tsx";
 import SummaryCard from "../components/SummaryCard.tsx";
 import {Wallet, TrendingUp} from 'lucide-react';
 
@@ -30,7 +29,7 @@ export default function Homepage() {
                             <h1 className="text-3xl font-bold text-base-content">Hola, Usuario</h1>
                             <p className="text-base-content/60 mt-1">Aquí tienes el resumen de tu cuenta hoy.</p>
                         </div>
-                        <button className="btn btn-primary btn-sm md:btn-md">Nueva Transferencia</button>
+                        <button className="btn btn-primary btn-sm md:btn-md">Nueva Transacción</button>
                     </div>
 
                     <div className="stats stats-vertical md:stats-horizontal shadow w-full border border-base-300">
@@ -46,7 +45,6 @@ export default function Homepage() {
                 </div>
             </div>
 
-            <Sidebar/>
         </div>
     );
 }
