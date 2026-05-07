@@ -13,14 +13,15 @@ export class TransactionsService {
   }
 
   findAll(user: number) {
-    return `This action returns all transactions`;
+    return this.transactionsRepository.findAllFromUser(user);
   }
 
-  findOne(user: number, postId: number) {
-    return `This action returns a #${postId} transaction`;
+  findOne(user: number, transactionId: number) {
+    return this.transactionsRepository.findOne(user, transactionId);
   }
 
   findWithUser(userOne: number, userTwo: number){
-      return 'bla'
+      return this.transactionsRepository.findAllBetweenUsers(userOne, userTwo);
   }
+
 }

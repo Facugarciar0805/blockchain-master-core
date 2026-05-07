@@ -5,9 +5,10 @@ import { TransactionsModule } from './transactions/transactions.module';
 import {AuthModule} from "./authentication/auth.module";
 import {TransactionsRepositoryModule} from "./repository/transactions/transactions.repository.module";
 import {ConfigModule} from "@nestjs/config";
+import {JwtModule} from "@nestjs/jwt";
 
 @Module({
-  imports: [TransactionsModule, AuthModule, TransactionsRepositoryModule, ConfigModule.forRoot()],
+  imports: [TransactionsModule, AuthModule, ConfigModule.forRoot({isGlobal: true}), JwtModule],
   controllers: [AppController],
   providers: [AppService],
 })
