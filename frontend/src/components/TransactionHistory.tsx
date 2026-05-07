@@ -29,9 +29,10 @@ function getWalletIdFromToken(): string | null {
     try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         return payload.sub ?? null;
-    } catch {
-        return null;
-    }
+      } catch {
+      return null;
+}
+
 }
 
 export default function TransactionHistory() {

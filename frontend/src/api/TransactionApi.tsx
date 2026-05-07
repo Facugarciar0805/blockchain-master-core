@@ -1,8 +1,8 @@
-import type { TransactionType } from '../types/TransactionTypes.tsx';
+import type { TransactionType, CreateTransactionRequest } from '../types/TransactionTypes.tsx';
 
 const url = import.meta.env.VITE_API_URL;
 
-export async function createTransaction(transaction: TransactionType) {
+export async function createTransaction(transaction: CreateTransactionRequest) {
     const token = localStorage.getItem('token');
     const response = await fetch(url + '/transactions', {
         method: 'POST',
@@ -12,7 +12,11 @@ export async function createTransaction(transaction: TransactionType) {
         },
         body: JSON.stringify(transaction)
     });
-    if (!response.ok) throw new Error(`Failed to create transaction from user ${transaction.sender} to user ${transaction.receiver} : ${response.status}`);
+
+    if (!response.ok) {
+        throw new Error(`Failed to create transaction to user ${transaction.receiver}: ${response.status}`);
+    }
+
     return response.json();
 }
 
@@ -25,7 +29,11 @@ export async function getAllTransactions(): Promise<TransactionType[]> {
             'Authorization': `Bearer ${token}`
         },
     });
-    if (!response.ok) throw new Error(`Couldn't show transactions from user: ${response.status}`);
+
+    if (!response.ok) {
+        throw new Error(`Couldn't show transactions from user: ${response.status}`);
+    }
+
     return response.json();
 }
 
@@ -38,6 +46,10 @@ export async function getAllTransactionsWithUser(userId: string): Promise<Transa
             'Authorization': `Bearer ${token}`
         },
     });
-    if (!response.ok) throw new Error(`Couldn't get transactions with user ${userId} : ${response.status}`);
+
+    if (!response.ok) {
+        throw new Error(`Couldn't get transactions with user ${userId}: ${response.status}`);
+    }
+
     return response.json();
 }

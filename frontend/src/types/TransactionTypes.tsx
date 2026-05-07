@@ -10,3 +10,9 @@ export interface TransactionType {
     description?: string;
 }
 
+export interface CreateTransactionRequest {
+    amount: number;
+    receiver: string;
+    description?: string;
+}
+
