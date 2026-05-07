@@ -5,7 +5,7 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import {AuthGuard} from "../authentication/auth.guard";
 import type { Request } from 'express'
 
-@Controller('transactions')
+@Controller('transaction')
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService, private authGuard: AuthGuard) {}
 
