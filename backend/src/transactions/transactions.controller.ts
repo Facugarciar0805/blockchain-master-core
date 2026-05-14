@@ -14,7 +14,7 @@ export class TransactionsController {
 
   create(@Req() req: Request, @Body() createTransactionDto: CreateTransactionDto) {
     const sender: number = req.user.sub;
-      //const sender = 1
+    //const sender = 1
     return this.transactionsService.create(sender, createTransactionDto);
   }
 
