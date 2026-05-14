@@ -1,19 +1,18 @@
-import type {User} from './UserTypes.tsx'
-
-export type TransactionStatus = 'COMPLETED' | 'PENDING' | 'FAILED';
-
 export interface TransactionItemProps {
     transaction: TransactionType;
-    loggedUserId: string;
+    loggedUserWalletId: string;
 }
 
 export interface TransactionType {
-    hash: string;
     amount: number;
-    sender: User;
-    receiver: User;
-    timestamp: Date;
+    sender: string;
+    receiver: string;
     description?: string;
-    status: TransactionStatus;
+}
+
+export interface CreateTransactionRequest {
+    amount: number;
+    receiver: string;
+    description?: string;
 }
 

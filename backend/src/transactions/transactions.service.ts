@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
-import {TransactionsRepositoryService} from "../repository/transactions/transactions.repository.service";
+import {TransactionsRepositoryService} from "../repository/transaction/transactions.repository.service";
 
 @Injectable()
 export class TransactionsService {
@@ -13,14 +13,15 @@ export class TransactionsService {
   }
 
   findAll(user: number) {
-    return `This action returns all transactions`;
+    return this.transactionsRepository.findAllFromUser(user);
   }
 
-  findOne(user: number, postId: number) {
-    return `This action returns a #${postId} transaction`;
+  findOne(user: number, transactionId: number) {
+    return this.transactionsRepository.findOne(user, transactionId);
   }
 
   findWithUser(userOne: number, userTwo: number){
-      return 'bla'
+      return this.transactionsRepository.findAllBetweenUsers(userOne, userTwo);
   }
+
 }
