@@ -1,11 +1,19 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as mqtt from 'mqtt';
 import {CreateTransactionDto} from "../transactions/dto/create-transaction.dto";
+import {TransactionsRepositoryService} from "../repository/transaction/transactions.repository.service";
+
 
 @Injectable()
 export class MqttService implements OnModuleInit {
     private mqttClient: mqtt.MqttClient;
     private readonly logger = new Logger(MqttService.name);
+    private transactionsRepository: TransactionsRepositoryService
+    private prev_hash: string | null = null;
+
+    constructor(transactionsRepository: TransactionsRepositoryService) {
+        this.transactionsRepository = transactionsRepository;
+    }
 
     onModuleInit() {
         this.connectToBroker();
@@ -47,9 +55,19 @@ export class MqttService implements OnModuleInit {
     }
 
     // Métod0 público que usará tu controlador para mandar el problema
-    public publishProblem(transactionData: CreateTransactionDto) {
+    public async publishProblem(transactionData: CreateTransactionDto) {
+
+        if (!this.prev_hash) {
+            const last = await this.transactionsRepository.findLast();
+            this.prev_hash = last && last.hash ? last.hash : '0x000_GENESIS_HASH';
+        }
+
         const topic = '/mining/problem';
-        const payload = JSON.stringify(transactionData);
+        const payload = JSON.stringify({
+            ...transactionData,
+            prev_hash: this.prev_hash,
+            status: 'pending'
+        });
 
         this.mqttClient.publish(topic, payload, (err) => {
             if (err) {
@@ -59,6 +77,7 @@ export class MqttService implements OnModuleInit {
             }
         });
     }
+
 
     // Lógica de negocio cuando llega una solución
     private handleMiningSolution(payload: string) {

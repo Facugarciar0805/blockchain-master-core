@@ -34,4 +34,10 @@ export class TransactionsRepositoryService {
         );
         return response.data;
     }
+    async findLast(){
+        const response = await firstValueFrom(
+            this.httpService.get(`${process.env.DATABASE_URL}/transactions/last`)
+        );
+        return response.data;
+    }
 }

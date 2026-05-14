@@ -10,14 +10,13 @@ export class UserRepositoryService {
     }
     async findByEmail(email: string) {
         const response = await firstValueFrom(
-            this.httpService.get(`${process.env.DATABASE_URL}/user`, {params: {email}})
+            this.httpService.get(`${process.env.DATABASE_URL}/user/${email}`)
         );
         return response.data;
     }
     async createUser(registerDto: RegisterDto) {
-        const body = { registerDto }
         const response = await firstValueFrom(
-            this.httpService.post(`${process.env.DATABASE_URL}/user`, body)
+            this.httpService.post(`${process.env.DATABASE_URL}/user`, registerDto)
         );
         return response.data;
     }

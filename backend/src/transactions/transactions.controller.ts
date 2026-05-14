@@ -11,8 +11,8 @@ export class TransactionsController {
     @Post()
     @UseGuards(AuthGuard)
     create(@Req() req: Request, @Body() createTransactionDto: CreateTransactionDto) {
-        const sender: number = req.user.sub;
-        return this.transactionsService.create(sender, createTransactionDto);
+        const user = req.user.sub;
+        return this.transactionsService.create(user,createTransactionDto);
     }
 
     @Get()

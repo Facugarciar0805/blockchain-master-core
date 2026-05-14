@@ -10,10 +10,10 @@ export class TransactionsService {
               private mqttService: MqttService) {
   }
 
-  create(sender: number, createTransactionDto: CreateTransactionDto) {
-    const info = {sender, ...createTransactionDto}
-    this.mqttService.publishProblem(info);
-    return this.transactionsRepository.create(sender, createTransactionDto);
+  create(user, createTransactionDto: CreateTransactionDto) {
+    //TODO QUE EL USER TENGA ESA WALLET (NI EN PEDO)
+    this.mqttService.publishProblem(createTransactionDto);
+    //return this.transactionsRepository.create(sender, createTransactionDto);
   }
 
   findAll(user: number) {
@@ -27,5 +27,6 @@ export class TransactionsService {
   findWithUser(userOne: number, userTwo: number){
       return this.transactionsRepository.findAllBetweenUsers(userOne, userTwo);
   }
+
 
 }
