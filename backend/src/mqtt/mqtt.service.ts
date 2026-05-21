@@ -62,12 +62,19 @@ export class MqttService implements OnModuleInit {
             this.prev_hash = last && last.hash ? last.hash : '0x000_GENESIS_HASH';
         }
 
-        const topic = '/mining/problem';
-        const payload = JSON.stringify({
+        const topic = 'mining/work';
+        const blockData = JSON.stringify({
             ...transactionData,
             prev_hash: this.prev_hash,
             status: 'pending'
         });
+
+        const payload = JSON.stringify({
+            data: blockData,
+            id: 1,
+            diff: 5,
+            required: 0
+        })
 
         this.mqttClient.publish(topic, payload, (err) => {
             if (err) {
