@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as mqtt from 'mqtt';
 import {CreateTransactionDto} from "../transactions/dto/create-transaction.dto";
+import {CreateBlockDto} from "../repository/transaction/dto/create-block.dto";
 import {TransactionsRepositoryService} from "../repository/transaction/transactions.repository.service";
 
 
@@ -30,9 +31,9 @@ export class MqttService implements OnModuleInit {
             this.logger.log('Conectado exitosamente a Mosquitto');
 
             // Nos suscribimos al topic donde los ESP32 mandan la solución
-            this.mqttClient.subscribe('/mining/solution', (err) => {
+            this.mqttClient.subscribe('mining/resolved', (err) => {
                 if (!err) {
-                    this.logger.log('Suscrito correctamente a /mining/solution');
+                    this.logger.log('Suscrito correctamente a mining/resolved');
                 } else {
                     this.logger.error('Error al suscribirse:', err);
                 }
@@ -41,7 +42,7 @@ export class MqttService implements OnModuleInit {
 
         // Evento: Recepción de mensajes (Aquí entra lo que manda el ESP32)
         this.mqttClient.on('message', (topic, message) => {
-            if (topic === '/mining/solution') {
+            if (topic === 'mining/resolved') {
                 const payload = message.toString();
                 this.logger.log(`¡Solución recibida del ESP32! Payload: ${payload}`);
                 this.handleMiningSolution(payload);
@@ -72,8 +73,8 @@ export class MqttService implements OnModuleInit {
         const payload = JSON.stringify({
             data: blockData,
             id: 1,
-            diff: 5,
-            required: 0
+            diff: 3,
+            required: 1
         })
 
         this.mqttClient.publish(topic, payload, (err) => {
@@ -86,16 +87,31 @@ export class MqttService implements OnModuleInit {
     }
 
 
-    // Lógica de negocio cuando llega una solución
-    private handleMiningSolution(payload: string) {
+    private async handleMiningSolution(payload: string) {
         try {
             const data = JSON.parse(payload);
-            // Acá hacés "toda la bola":
-            // 1. Validar el hash
-            // 2. Actualizar el estado de la transacción en tu DB a "minada/completada"
-            // 3. Actualizar balances de las wallets
+
+            const { miner, workId, nonce, hash, block, diff, elapsedMs } = data;
+
+            const blockData = JSON.parse(block);
+
+            const blockDto = new CreateBlockDto();
+            blockDto.prev_hash = blockData.prev_hash;
+            blockDto.hash = hash;
+            blockDto.amount = blockData.amount;
+            blockDto.sender_wallet_id = blockData.sender_wallet_id;
+            blockDto.receiver_wallet_id = blockData.receiver_wallet_id;
+            blockDto.descrip = blockData.descrip ? blockData.descrip : "No description";
+            blockDto.nonce = nonce;
+            blockDto.status = 'confirmed';
+
+            await this.transactionsRepository.createBlock(blockDto);
+
+            this.prev_hash = hash;
+
+            this.logger.log(`Bloque minado guardado: workId=${workId} hash=${hash} minero=${miner} nonce=${nonce}`);
         } catch (error) {
-            this.logger.error('El ESP32 no mandó un JSON válido:', payload);
+            this.logger.error('Error procesando solución minada:', error);
         }
     }
 }
