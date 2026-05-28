@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TransactionHistory from "../components/TransactionHistory.tsx";
 import SummaryCard from "../components/SummaryCard.tsx";
-import { Wallet, TrendingUp } from "lucide-react";
+import { Wallet } from "lucide-react";
 import {createTransaction} from "../api/TransactionApi.tsx";
+import { getMyWallet } from "../api/WalletApi.tsx";
 
 export default function Homepage() {
     const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
@@ -11,6 +12,8 @@ export default function Homepage() {
     const [description, setDescription] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [walletBalance, setWalletBalance] = useState<number | null>(null);
+    const [walletError, setWalletError] = useState<string | null>(null);
 
 
     async function handleCreateTransaction() {
@@ -34,6 +37,21 @@ export default function Homepage() {
             setIsSubmitting(false);
         }
     }
+    useEffect(() => {
+        const loadWallet = async () => {
+            try {
+                setWalletError(null);
+
+                const wallet = await getMyWallet();
+                setWalletBalance(wallet.balance);
+            } catch (error) {
+                setWalletError("No se pudo cargar el saldo");
+                setWalletBalance(null);
+            }
+        };
+
+        void loadWallet();
+    }, []);
 
 
     return (
@@ -74,21 +92,12 @@ export default function Homepage() {
                     </div>
 
                     <div className="stats stats-vertical md:stats-horizontal shadow w-full border border-base-300">
-
                         <SummaryCard
                             title={"Saldo Disponible"}
-                            amount={45231.89}
+                            amount={walletBalance}
                             icon={Wallet}
                             textStyle={"text-primary"}
-                            info={"Actualizado hace 5 minutos"}
-                        />
-
-                        <SummaryCard
-                            title={"Ingresos este mes"}
-                            amount={120500}
-                            icon={TrendingUp}
-                            textStyle={"text-success"}
-                            info={"14% más que el mes pasado"}
+                            info={walletError ?? "Saldo actualizado desde wallet"}
                         />
                     </div>
 

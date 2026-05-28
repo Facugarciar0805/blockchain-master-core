@@ -4,7 +4,7 @@ const url = import.meta.env.VITE_API_URL;
 
 export async function createTransaction(transaction: CreateTransactionRequest) {
     const token = localStorage.getItem('token');
-    const response = await fetch(url + '/transactions', {
+    const response = await fetch(url + '/transaction', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

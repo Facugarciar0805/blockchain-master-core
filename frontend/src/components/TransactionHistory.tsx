@@ -3,25 +3,6 @@ import type { TransactionType } from '../types/TransactionTypes.tsx'
 import { getAllTransactions } from "../api/TransactionApi.tsx";
 import { useCallback, useEffect, useState } from "react";
 
-const MOCK_TRANSACTIONS: TransactionType[] = [
-    {
-        amount: 1500,
-        sender: 'wallet-abc-123',
-        receiver: 'wallet-xyz-789',
-        description: 'Pago de alquiler'
-    },
-    {
-        amount: 250,
-        sender: 'wallet-xyz-789',
-        receiver: 'wallet-abc-123',
-        description: 'Transferencia inicial'
-    },
-    {
-        amount: 800,
-        sender: 'wallet-abc-123',
-        receiver: 'wallet-def-456',
-    }
-];
 
 function getWalletIdFromToken(): string | null {
     const token = localStorage.getItem('token');
@@ -36,7 +17,7 @@ function getWalletIdFromToken(): string | null {
 }
 
 export default function TransactionHistory() {
-    const loggedUserWalletId = getWalletIdFromToken() ?? '';
+    const loggedUserWalletId = getWalletIdFromToken();
     const [transactions, setTransactions] = useState<TransactionType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -49,9 +30,9 @@ export default function TransactionHistory() {
         const fetchTransactions = async () => {
             try {
                 setIsLoading(true);
-                //const data = await loadTransactions();
-                //setTransactions(data);
-                setTransactions(MOCK_TRANSACTIONS);
+                setError(null);
+                const data = await loadTransactions();
+                setTransactions(data);
             } catch (e) {
                 setError('No se pudieron cargar las transacciones');
             } finally {
