@@ -3,7 +3,7 @@ import type { TransactionItemProps } from '../types/TransactionTypes.tsx'
 export default function Transaction({ transaction, loggedUserWalletId }: TransactionItemProps) {
     const { amount, sender, receiver, description } = transaction;
 
-    const isSender = sender === loggedUserWalletId;
+    const isSender = loggedUserWalletId !== null && sender === loggedUserWalletId;
 
     const title = isSender ? `Transferencia a ${receiver}` : `Transferencia de ${sender}`;
     const formattedAmount = isSender ? `- $${amount.toLocaleString()}` : `+ $${amount.toLocaleString()}`;

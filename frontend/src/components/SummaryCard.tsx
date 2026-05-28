@@ -1,6 +1,6 @@
 interface SummaryCardProps {
     title: string,
-    amount: number,
+    amount: number | null,
     icon: React.ElementType,
     textStyle: string,
     info: string,
@@ -12,7 +12,9 @@ export default function SummaryCard({title, amount, icon: Icon, textStyle, info}
                 <Icon className="w-8 h-8" />
             </div>
             <div className="stat-title">{title}</div>
-            <div className={`stat-value ${textStyle}`}>$ {amount} </div>
+            <div className={`stat-value ${textStyle}`}>
+                {amount === null ? "..." : `$ ${amount}`}
+            </div>
             <div className="stat-desc">{info}</div>
         </div>
     );

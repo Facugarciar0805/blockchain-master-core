@@ -1,6 +1,6 @@
 export interface TransactionItemProps {
     transaction: TransactionType;
-    loggedUserWalletId: string;
+    loggedUserWalletId: string | null;
 }
 
 export interface TransactionType {
