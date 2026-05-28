@@ -1,6 +1,7 @@
 import {Injectable} from "@nestjs/common";
 import {HttpService} from "@nestjs/axios";
 import {CreateTransactionDto} from "../../transactions/dto/create-transaction.dto";
+import {CreateBlockDto} from "./dto/create-block.dto";
 import {firstValueFrom} from "rxjs";
 import {ConfigService} from "@nestjs/config";
 
@@ -14,8 +15,15 @@ export class TransactionsRepositoryService {
             this.httpService.post(`${process.env.DATABASE_URL}/transactions`, body)
         );
         return response.data;
-
     }
+
+    async createBlock(createBlockDto: CreateBlockDto){
+        const response = await firstValueFrom(
+            this.httpService.post(`${process.env.DATABASE_URL}/transactions`, createBlockDto)
+        );
+        return response.data;
+    }
+
     async findAllFromUser(userId: number) {
         const response = await firstValueFrom(
             this.httpService.get(`${process.env.DATABASE_URL}/transactions/${userId}`)
@@ -31,6 +39,12 @@ export class TransactionsRepositoryService {
     async findOne(userId: number, transactionId: number) {
         const response = await firstValueFrom(
             this.httpService.get(`${process.env.DATABASE_URL}/transactions`, {params: {userId, transactionId}})
+        );
+        return response.data;
+    }
+    async findLast(){
+        const response = await firstValueFrom(
+            this.httpService.get(`${process.env.DATABASE_URL}/transactions/last`)
         );
         return response.data;
     }
