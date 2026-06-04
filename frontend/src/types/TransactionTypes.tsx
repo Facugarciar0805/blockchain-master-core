@@ -1,6 +1,7 @@
 export interface TransactionItemProps {
     transaction: TransactionType;
     loggedUserWalletId: string | null;
+    compact?: boolean;
 }
 
 export interface TransactionType {
