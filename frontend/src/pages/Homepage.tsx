@@ -17,6 +17,7 @@ export default function Homepage() {
     const [error, setError] = useState<string | null>(null);
     const [walletBalance, setWalletBalance] = useState<number | null>(null);
     const [walletError, setWalletError] = useState<string | null>(null);
+    const [hasWallet, setHasWallet] = useState(false);
 
 
     async function handleCreateTransaction() {
@@ -53,10 +54,17 @@ export default function Homepage() {
                 setWalletError(null);
 
                 const wallet = await getMyWallet();
-                setWalletBalance(wallet.balance);
+                if (wallet) {
+                    setWalletBalance(wallet.balance);
+                    setHasWallet(true);
+                } else {
+                    setWalletBalance(null);
+                    setHasWallet(false);
+                }
             } catch (error) {
                 setWalletError("No se pudo cargar el saldo");
                 setWalletBalance(null);
+                setHasWallet(false);
             }
         };
 
@@ -112,7 +120,7 @@ export default function Homepage() {
                     </div>
 
                     <div className="w-full">
-                        <TransactionHistory />
+                        <TransactionHistory hasWallet={hasWallet} />
                     </div>
                 </div>
             </div>

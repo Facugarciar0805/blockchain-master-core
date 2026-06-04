@@ -6,7 +6,7 @@ import { getJwtPayload } from "../utils/jwt.ts";
 
 type Tab = 'all' | 'incoming' | 'outgoing';
 
-export default function TransactionHistory() {
+export default function TransactionHistory({ hasWallet }: { hasWallet: boolean }) {
     const loggedUserWalletId = getJwtPayload()?.sub ?? null;
     const [activeTab, setActiveTab] = useState<Tab>('all');
     const [transactions, setTransactions] = useState<TransactionType[]>([]);
@@ -60,17 +60,19 @@ export default function TransactionHistory() {
                         <button className="btn btn-sm join-item">Buscar</button>
                     </div>
                 </div>
-                <div className="tabs tabs-boxed bg-base-200/50 p-1">
-                    {tabs.map(tab => (
-                        <button
-                            key={tab.key}
-                            className={`tab ${activeTab === tab.key ? 'tab-active' : ''}`}
-                            onClick={() => setActiveTab(tab.key)}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
+                {hasWallet && (
+                    <div className="tabs tabs-boxed bg-base-200/50 p-1">
+                        {tabs.map(tab => (
+                            <button
+                                key={tab.key}
+                                className={`tab ${activeTab === tab.key ? 'tab-active' : ''}`}
+                                onClick={() => setActiveTab(tab.key)}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <div className="flex flex-col w-full">
