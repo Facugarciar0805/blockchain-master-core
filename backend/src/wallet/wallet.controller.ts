@@ -18,6 +18,7 @@ export class WalletController {
     @UseGuards(AuthGuard)
     createWallet(@Req() req: Request) {
         const user = req.user.sub;
+        console.log(user);
         return this.walletService.createWallet(user);
     }
 }

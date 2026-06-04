@@ -3,7 +3,7 @@ import TransactionHistory from "../components/TransactionHistory.tsx";
 import SummaryCard from "../components/SummaryCard.tsx";
 import { Wallet } from "lucide-react";
 import {createTransaction} from "../api/TransactionApi.tsx";
-import { getMyWallet } from "../api/WalletApi.tsx";
+import { getMyWallet, createWallet } from "../api/WalletApi.tsx";
 import { getJwtPayload } from "../utils/jwt.ts";
 
 const user = getJwtPayload();
@@ -16,8 +16,9 @@ export default function Homepage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [walletBalance, setWalletBalance] = useState<number | null>(null);
-    const [walletError, setWalletError] = useState<string | null>(null);
     const [hasWallet, setHasWallet] = useState(false);
+    const [isCreatingWallet, setIsCreatingWallet] = useState(false);
+    const [walletLoaded, setWalletLoaded] = useState(false);
 
 
     async function handleCreateTransaction() {
@@ -48,26 +49,37 @@ export default function Homepage() {
             setIsSubmitting(false);
         }
     }
-    useEffect(() => {
-        const loadWallet = async () => {
-            try {
-                setWalletError(null);
-
-                const wallet = await getMyWallet();
-                if (wallet) {
-                    setWalletBalance(wallet.balance);
-                    setHasWallet(true);
-                } else {
-                    setWalletBalance(null);
-                    setHasWallet(false);
-                }
-            } catch (error) {
-                setWalletError("No se pudo cargar el saldo");
+    async function loadWallet() {
+        try {
+            const wallet = await getMyWallet();
+            if (wallet) {
+                setWalletBalance(wallet.balance);
+                setHasWallet(true);
+            } else {
                 setWalletBalance(null);
                 setHasWallet(false);
             }
-        };
+        } catch {
+            setWalletBalance(null);
+            setHasWallet(false);
+        } finally {
+            setWalletLoaded(true);
+        }
+    }
 
+    async function handleCreateWallet() {
+        try {
+            setIsCreatingWallet(true);
+            await createWallet();
+            await loadWallet();
+        } catch {
+            setError("No se pudo crear la wallet");
+        } finally {
+            setIsCreatingWallet(false);
+        }
+    }
+
+    useEffect(() => {
         void loadWallet();
     }, []);
 
@@ -109,15 +121,54 @@ export default function Homepage() {
                         </button>
                     </div>
 
-                    <div className="stats stats-vertical md:stats-horizontal shadow w-full border border-base-300">
-                        <SummaryCard
-                            title={"Saldo Disponible"}
-                            amount={walletBalance}
-                            icon={Wallet}
-                            textStyle={"text-primary"}
-                            info={walletError ?? "Saldo actualizado desde wallet"}
-                        />
-                    </div>
+                    {walletLoaded && !hasWallet ? (
+                        <div className="hero rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-base-200 border border-primary/20 shadow-lg">
+                            <div className="hero-content text-center py-12 md:py-16">
+                                <div className="max-w-md">
+                                    <div className="flex justify-center mb-6">
+                                        <div className="p-4 rounded-full bg-primary/10 ring-1 ring-primary/20">
+                                            <Wallet className="w-10 h-10 text-primary" />
+                                        </div>
+                                    </div>
+                                    <h2 className="text-2xl font-bold">Comienza a usar la Blockchain</h2>
+                                    <p className="text-base-content/60 mt-3 leading-relaxed">
+                                        Creá tu wallet para poder enviar y recibir transacciones en la red.
+                                        Tus movimientos quedarán registrados de forma inmutable.
+                                    </p>
+                                    {error && (
+                                        <p className="text-error text-sm mt-3">{error}</p>
+                                    )}
+                                    <button
+                                        className="btn btn-primary btn-lg mt-6 shadow-lg shadow-primary/20"
+                                        onClick={handleCreateWallet}
+                                        disabled={isCreatingWallet}
+                                    >
+                                        {isCreatingWallet ? (
+                                            <>
+                                                <span className="loading loading-spinner"></span>
+                                                Creando...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Wallet className="w-5 h-5" />
+                                                Crear Wallet
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="stats stats-vertical md:stats-horizontal shadow w-full border border-base-300">
+                            <SummaryCard
+                                title={"Saldo Disponible"}
+                                amount={walletBalance}
+                                icon={Wallet}
+                                textStyle={"text-primary"}
+                                info={"Saldo actualizado desde wallet"}
+                            />
+                        </div>
+                    )}
 
                     <div className="w-full">
                         <TransactionHistory hasWallet={hasWallet} />
