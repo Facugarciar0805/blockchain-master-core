@@ -17,18 +17,30 @@ export default function RegisterPage() {
             setIsSubmitting(true);
             setError(null);
 
-            const response = await fetch(url + "/register", {
+            const registerResponse = await fetch(url + "/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, email, password }),
             });
 
-            if (!response.ok) {
-                const msg = await response.text();
+            if (!registerResponse.ok) {
+                const msg = await registerResponse.text();
                 throw new Error(msg || "Error al registrarse");
             }
 
-            navigate("/login");
+            const loginResponse = await fetch(url + "/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (!loginResponse.ok) {
+                throw new Error("Cuenta creada, pero no se pudo iniciar sesión automáticamente");
+            }
+
+            const data = await loginResponse.json();
+            localStorage.setItem("token", data.access_token);
+            navigate("/homepage");
         } catch (err) {
             setError(err instanceof Error ? err.message : "Error al registrarse");
         } finally {
