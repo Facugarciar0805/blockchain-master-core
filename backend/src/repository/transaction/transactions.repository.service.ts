@@ -24,6 +24,13 @@ export class TransactionsRepositoryService {
         return response.data;
     }
 
+    async findAll() {
+        const respone = await firstValueFrom(
+            this.httpService.get(`${process.env.DATABASE_URL}/transactions`),
+        );
+        return respone.data;
+    }
+
     async findAllFromUser(userId: number) {
         const response = await firstValueFrom(
             this.httpService.get(`${process.env.DATABASE_URL}/transactions/${userId}`)

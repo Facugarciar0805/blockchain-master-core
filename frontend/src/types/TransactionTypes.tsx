@@ -4,15 +4,20 @@ export interface TransactionItemProps {
 }
 
 export interface TransactionType {
+    prev_hash: string;
+    hash: string;
     amount: number;
-    sender: string;
-    receiver: string;
-    description?: string;
+    sender_wallet_id: string;
+    receiver_wallet_id: string;
+    descrip?: string;
+    status: string;
+    nonce: number;
 }
 
 export interface CreateTransactionRequest {
+    sender_wallet_id: string;
+    receiver_wallet_id: string;
     amount: number;
-    receiver: string;
-    description?: string;
+    descrip?: string;
 }
 

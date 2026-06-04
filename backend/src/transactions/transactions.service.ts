@@ -17,7 +17,7 @@ export class TransactionsService {
   }
 
   findAll(user: number) {
-    return this.transactionsRepository.findAllFromUser(user);
+    return this.transactionsRepository.findAll();
   }
 
   findOne(user: number, transactionId: number) {

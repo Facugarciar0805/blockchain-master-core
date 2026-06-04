@@ -14,7 +14,7 @@ export async function createTransaction(transaction: CreateTransactionRequest) {
     });
 
     if (!response.ok) {
-        throw new Error(`Failed to create transaction to user ${transaction.receiver}: ${response.status}`);
+        throw new Error(`Failed to create transaction: ${response.status}`);
     }
 
     return response.json();
@@ -22,7 +22,7 @@ export async function createTransaction(transaction: CreateTransactionRequest) {
 
 export async function getAllTransactions(): Promise<TransactionType[]> {
     const token = localStorage.getItem('token');
-    const response = await fetch(url + '/transactions', {
+    const response = await fetch(url + '/transaction', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ export async function getAllTransactions(): Promise<TransactionType[]> {
 
 export async function getAllTransactionsWithUser(userId: string): Promise<TransactionType[]> {
     const token = localStorage.getItem('token');
-    const response = await fetch(url + `/transactions/user/${userId}`, {
+    const response = await fetch(url + `/transaction/user/${userId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

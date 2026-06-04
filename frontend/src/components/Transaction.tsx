@@ -1,11 +1,11 @@
 import type { TransactionItemProps } from '../types/TransactionTypes.tsx'
 
 export default function Transaction({ transaction, loggedUserWalletId }: TransactionItemProps) {
-    const { amount, sender, receiver, description } = transaction;
+    const { amount, sender_wallet_id, receiver_wallet_id, descrip } = transaction;
 
-    const isSender = loggedUserWalletId !== null && sender === loggedUserWalletId;
+    const isSender = loggedUserWalletId !== null && sender_wallet_id === loggedUserWalletId;
 
-    const title = isSender ? `Transferencia a ${receiver}` : `Transferencia de ${sender}`;
+    const title = isSender ? `Transferencia a ${receiver_wallet_id}` : `Transferencia de ${sender_wallet_id}`;
     const formattedAmount = isSender ? `- $${amount.toLocaleString()}` : `+ $${amount.toLocaleString()}`;
     const amountColorClass = isSender ? 'text-error' : 'text-success';
     const iconBgClass = isSender ? 'bg-error/10 text-error' : 'bg-success/10 text-success';

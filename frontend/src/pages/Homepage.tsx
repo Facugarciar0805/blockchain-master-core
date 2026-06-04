@@ -4,12 +4,15 @@ import SummaryCard from "../components/SummaryCard.tsx";
 import { Wallet } from "lucide-react";
 import {createTransaction} from "../api/TransactionApi.tsx";
 import { getMyWallet } from "../api/WalletApi.tsx";
+import { getJwtPayload } from "../utils/jwt.ts";
+
+const user = getJwtPayload();
 
 export default function Homepage() {
     const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
-    const [receiver, setReceiver] = useState("");
+    const [receiverWalletId, setReceiverWalletId] = useState("");
     const [amount, setAmount] = useState("");
-    const [description, setDescription] = useState("");
+    const [descrip, setDescrip] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [walletBalance, setWalletBalance] = useState<number | null>(null);
@@ -17,19 +20,26 @@ export default function Homepage() {
 
 
     async function handleCreateTransaction() {
+        const senderWalletId = user?.sub;
+        if (!senderWalletId) {
+            setError("No se encontró el usuario. Iniciá sesión de nuevo.");
+            return;
+        }
+
         try {
             setIsSubmitting(true);
             setError(null);
 
             await createTransaction({
+                sender_wallet_id: senderWalletId,
+                receiver_wallet_id: receiverWalletId,
                 amount: Number(amount),
-                receiver,
-                description,
+                descrip: descrip || undefined,
             });
 
-            setReceiver("");
+            setReceiverWalletId("");
             setAmount("");
-            setDescription("");
+            setDescrip("");
             setIsTransactionModalOpen(false);
         } catch (error) {
             setError("No se pudo crear la transacción");
@@ -79,7 +89,7 @@ export default function Homepage() {
                     {/* Saludo */}
                     <div className="flex justify-between items-end">
                         <div>
-                            <h1 className="text-3xl font-bold text-base-content">Hola, Usuario</h1>
+                            <h1 className="text-3xl font-bold text-base-content">Hola, {user?.username ?? "Usuario"}</h1>
                             <p className="text-base-content/60 mt-1">Aquí tienes el resumen de tu cuenta hoy.</p>
                         </div>
 
@@ -115,9 +125,9 @@ export default function Homepage() {
                         <div className="space-y-4 mt-4">
                             <input
                                 className="input input-bordered w-full"
-                                placeholder="Receiver"
-                                value={receiver}
-                                onChange={(e) => setReceiver(e.target.value)}
+                                placeholder="Wallet ID del destinatario"
+                                value={receiverWalletId}
+                                onChange={(e) => setReceiverWalletId(e.target.value)}
                                 disabled={isSubmitting}
                             />
 
@@ -133,8 +143,8 @@ export default function Homepage() {
                             <textarea
                                 className="textarea textarea-bordered w-full"
                                 placeholder="Description"
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                value={descrip}
+                                onChange={(e) => setDescrip(e.target.value)}
                                 disabled={isSubmitting}
                             />
                             {error && (

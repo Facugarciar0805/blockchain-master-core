@@ -2,22 +2,10 @@ import Transaction from './Transaction.tsx'
 import type { TransactionType } from '../types/TransactionTypes.tsx'
 import { getAllTransactions } from "../api/TransactionApi.tsx";
 import { useCallback, useEffect, useState } from "react";
-
-
-function getWalletIdFromToken(): string | null {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.sub ?? null;
-      } catch {
-      return null;
-}
-
-}
+import { getJwtPayload } from "../utils/jwt.ts";
 
 export default function TransactionHistory() {
-    const loggedUserWalletId = getWalletIdFromToken();
+    const loggedUserWalletId = getJwtPayload()?.sub ?? null;
     const [transactions, setTransactions] = useState<TransactionType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
