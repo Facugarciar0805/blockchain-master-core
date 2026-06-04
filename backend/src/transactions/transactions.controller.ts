@@ -16,12 +16,16 @@ export class TransactionsController {
     }
 
     @Get()
-    @UseGuards(AuthGuard)
-    findAll(@Req() req: Request) {
-        const user: number = req.user.sub;
-        return this.transactionsService.findAll(user);
+    findAll() {
+        return this.transactionsService.findAll();
     }
 
+    @Get(':id')
+    @UseGuards(AuthGuard)
+    findAllFromUser(@Req() req: Request) {
+        const user: number = req.user.sub;
+        return this.transactionsService.findAllFromUser(user);
+    }
     @Get(':id')
     @UseGuards(AuthGuard)
     findOne(@Req() req: Request, @Param('id', ParseIntPipe) transactionId: number) {

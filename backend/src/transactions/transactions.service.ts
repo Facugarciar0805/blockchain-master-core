@@ -15,8 +15,11 @@ export class TransactionsService {
     this.mqttService.publishProblem(createTransactionDto);
     //return this.transactionsRepository.create(sender, createTransactionDto);
   }
+  findAllFromUser(user: number){
+    return this.transactionsRepository.findAllFromUser(user);
+  }
 
-  findAll(user: number) {
+  findAll() {
     return this.transactionsRepository.findAll();
   }
 
