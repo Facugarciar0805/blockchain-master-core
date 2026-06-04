@@ -17,14 +17,14 @@ export default function Homepage() {
     const [error, setError] = useState<string | null>(null);
     const [walletBalance, setWalletBalance] = useState<number | null>(null);
     const [hasWallet, setHasWallet] = useState(false);
+    const [walletAddress, setWalletAddress] = useState<string | null>(null);
     const [isCreatingWallet, setIsCreatingWallet] = useState(false);
     const [walletLoaded, setWalletLoaded] = useState(false);
 
 
     async function handleCreateTransaction() {
-        const senderWalletId = user?.sub;
-        if (!senderWalletId) {
-            setError("No se encontró el usuario. Iniciá sesión de nuevo.");
+        if (!walletAddress) {
+            setError("No se encontró tu wallet. Creá una primero.");
             return;
         }
 
@@ -33,7 +33,7 @@ export default function Homepage() {
             setError(null);
 
             await createTransaction({
-                sender_wallet_id: senderWalletId,
+                sender_wallet_id: walletAddress,
                 receiver_wallet_id: receiverWalletId,
                 amount: Number(amount),
                 descrip: descrip || undefined,
@@ -54,13 +54,16 @@ export default function Homepage() {
             const wallet = await getMyWallet();
             if (wallet) {
                 setWalletBalance(wallet.balance);
+                setWalletAddress(wallet.address);
                 setHasWallet(true);
             } else {
                 setWalletBalance(null);
+                setWalletAddress(null);
                 setHasWallet(false);
             }
         } catch {
             setWalletBalance(null);
+            setWalletAddress(null);
             setHasWallet(false);
         } finally {
             setWalletLoaded(true);
@@ -168,6 +171,20 @@ export default function Homepage() {
                                 textStyle={"text-primary"}
                                 info={"Saldo actualizado desde wallet"}
                             />
+                            <div className="mt-3 pt-3 border-t border-base-300/40 flex items-center gap-2">
+                                <span className="text-xs text-base-content/50 font-mono truncate" title={walletAddress ?? ""}>
+                                    {walletAddress ?? "—"}
+                                </span>
+                                <button
+                                    className="btn btn-ghost btn-xs btn-square shrink-0 text-base-content/40 hover:text-base-content/70 transition-colors"
+                                    onClick={() => walletAddress && navigator.clipboard.writeText(walletAddress)}
+                                    title="Copiar dirección"
+                                >
+                                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -204,6 +221,23 @@ export default function Homepage() {
                         </div>
 
                         <div className="p-6 space-y-4">
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-base-content/60">Tu Wallet</label>
+                                <div className="input input-bordered w-full bg-base-200/30 text-sm font-mono text-base-content/70 flex items-center gap-2 cursor-default pr-1">
+                                    <span className="w-2 h-2 rounded-full bg-success shrink-0"></span>
+                                    <span className="truncate">{walletAddress ?? "—"}</span>
+                                    <button
+                                        className="btn btn-ghost btn-xs btn-square ml-auto shrink-0 text-base-content/40 hover:text-base-content/70 transition-colors"
+                                        onClick={() => walletAddress && navigator.clipboard.writeText(walletAddress)}
+                                        title="Copiar dirección"
+                                    >
+                                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
                             <div className="space-y-1.5">
                                 <label className="text-xs font-medium text-base-content/60">Wallet del destinatario</label>
                                 <input
