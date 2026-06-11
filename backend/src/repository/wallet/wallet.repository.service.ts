@@ -14,6 +14,22 @@ export class WalletRepositoryService {
         return wallets.find(w => w.user_id === userId.toString()) ?? null;
     }
 
+    async findByAddress(address: string) {
+        const response = await firstValueFrom(
+            this.httpService.get(`${process.env.DATABASE_URL}/wallets`)
+        );
+        const wallets = response.data as any[];
+        return wallets.find(w => w.address === address) ?? null;
+    }
+
+    async update(address: string, data: any) {
+        const body = { address, ...data };
+        const response = await firstValueFrom(
+            this.httpService.post(`${process.env.DATABASE_URL}/wallets`, body)
+        );
+        return response.data;
+    }
+
     async create(userId: number) {
         const body = {
             user_id: userId.toString(),

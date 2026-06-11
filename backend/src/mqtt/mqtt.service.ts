@@ -3,6 +3,7 @@ import * as mqtt from 'mqtt';
 import {CreateTransactionDto} from "../transactions/dto/create-transaction.dto";
 import {CreateBlockDto} from "../repository/transaction/dto/create-block.dto";
 import {TransactionsRepositoryService} from "../repository/transaction/transactions.repository.service";
+import {WalletRepositoryService} from "../repository/wallet/wallet.repository.service";
 
 
 @Injectable()
@@ -10,10 +11,13 @@ export class MqttService implements OnModuleInit {
     private mqttClient: mqtt.MqttClient;
     private readonly logger = new Logger(MqttService.name);
     private transactionsRepository: TransactionsRepositoryService
+    private walletRepository: WalletRepositoryService
     private prev_hash: string | null = null;
 
-    constructor(transactionsRepository: TransactionsRepositoryService) {
+    constructor(transactionsRepository: TransactionsRepositoryService,
+                walletRepository: WalletRepositoryService) {
         this.transactionsRepository = transactionsRepository;
+        this.walletRepository = walletRepository;
     }
 
     onModuleInit() {
@@ -21,7 +25,7 @@ export class MqttService implements OnModuleInit {
     }
 
     private connectToBroker() {
-        const brokerUrl = 'mqtt://localhost:1883';
+        const brokerUrl = 'mqtt://172.22.43.231:1883';
 
         this.logger.log(`Conectando al broker MQTT en ${brokerUrl}...`);
         this.mqttClient = mqtt.connect(brokerUrl);
@@ -106,6 +110,21 @@ export class MqttService implements OnModuleInit {
             blockDto.status = 'confirmed';
 
             await this.transactionsRepository.createBlock(blockDto);
+
+            const senderWallet = await this.walletRepository.findByAddress(blockDto.sender_wallet_id);
+            const receiverWallet = await this.walletRepository.findByAddress(blockDto.receiver_wallet_id);
+
+            if (senderWallet && receiverWallet) {
+                senderWallet.balance -= blockDto.amount;
+                await this.walletRepository.update(senderWallet.address, senderWallet);
+
+                receiverWallet.balance += blockDto.amount;
+                await this.walletRepository.update(receiverWallet.address, receiverWallet);
+
+                this.logger.log(`Balances actualizados: -${blockDto.amount} al sender, +${blockDto.amount} al receiver`);
+            } else {
+                this.logger.warn('No se pudieron actualizar los balances: wallet(s) no encontrada(s)');
+            }
 
             this.prev_hash = hash;
 
