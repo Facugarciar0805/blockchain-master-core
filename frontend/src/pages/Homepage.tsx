@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import TransactionHistory from "../components/TransactionHistory.tsx";
 import SummaryCard from "../components/SummaryCard.tsx";
-import { Wallet } from "lucide-react";
+import { Wallet, LogOut, ArrowUpRight, Copy, X } from "lucide-react";
 import {createTransaction} from "../api/TransactionApi.tsx";
 import { getMyWallet, createWallet } from "../api/WalletApi.tsx";
 import { getJwtPayload } from "../utils/jwt.ts";
 
-const user = getJwtPayload();
-
 export default function Homepage() {
+    const user = getJwtPayload();
+    const navigate = useNavigate();
     const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
     const [receiverWalletId, setReceiverWalletId] = useState("");
     const [amount, setAmount] = useState("");
@@ -21,11 +22,17 @@ export default function Homepage() {
     const [isCreatingWallet, setIsCreatingWallet] = useState(false);
     const [walletLoaded, setWalletLoaded] = useState(false);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [copied, setCopied] = useState(false);
 
 
     async function handleCreateTransaction() {
         if (!walletAddress) {
             setError("No se encontró tu wallet. Creá una primero.");
+            return;
+        }
+
+        if (Number(amount) > (walletBalance ?? 0)) {
+            setError("Saldo insuficiente");
             return;
         }
 
@@ -85,6 +92,18 @@ export default function Homepage() {
         }
     }
 
+    function handleLogout() {
+        localStorage.removeItem("token");
+        navigate("/login");
+    }
+
+    async function handleCopyAddress() {
+        if (!walletAddress) return;
+        await navigator.clipboard.writeText(walletAddress);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }
+
     useEffect(() => {
         void loadWallet();
     }, []);
@@ -101,29 +120,41 @@ export default function Homepage() {
                             <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
                             <span className="text-[11px] font-semibold uppercase tracking-widest text-base-content/40">Dashboard</span>
                         </div>
-                        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-base-content">
+                        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-base-content flex items-center gap-3 flex-wrap">
                             Hola, <span className="text-primary">{user?.username ?? "Usuario"}</span>
+                            <button
+                                className="btn btn-xs rounded-full border border-base-content/15 bg-base-100/50 text-base-content/40 hover:text-base-content/60 hover:border-base-content/30 transition-all"
+                                onClick={handleLogout}
+                            >
+                                <LogOut className="w-3 h-3" />
+                                Cerrar sesión
+                            </button>
                         </h1>
                         <p className="text-sm text-base-content/50">Resumen de tu actividad en la red</p>
                     </div>
 
-                    <button
-                        className="btn btn-primary btn-sm md:btn-md shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 gap-2"
-                        onClick={() => setIsTransactionModalOpen(true)}
-                    >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                        Nueva Transacción
-                    </button>
+                    {hasWallet && (
+                        <div className="flex items-center gap-3">
+                            <button
+                                className="btn btn-primary btn-sm md:btn-md shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 gap-2"
+                                onClick={() => setIsTransactionModalOpen(true)}
+                            >
+                                <ArrowUpRight className="w-4 h-4" />
+                                Nueva Transacción
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {successMessage && (
-                    <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-success/10 text-success text-sm border border-success/20">
-                        <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        {successMessage}
+                    <div className="relative overflow-hidden rounded-xl bg-success/10 text-success text-sm border border-success/20">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-success/5 rounded-full blur-2xl"></div>
+                        <div className="flex items-center gap-2.5 px-4 py-3 relative">
+                            <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            {successMessage}
+                        </div>
                     </div>
                 )}
 
@@ -170,31 +201,36 @@ export default function Homepage() {
                         </div>
                     </div>
                 ) : (
-                    <div className="rounded-2xl bg-gradient-to-br from-base-100 to-base-200/50 shadow-sm border border-base-300/60 overflow-hidden">
-                        <div className="p-5 md:p-6">
-                            <div className="flex items-center gap-2 mb-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
-                                <span className="text-[11px] font-semibold uppercase tracking-widest text-base-content/40">Wallet</span>
-                            </div>
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-success/10 via-success/[0.04] to-base-200 border border-success/15 shadow-xl shadow-success/5">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-success/5 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-success/5 rounded-full blur-3xl"></div>
+                        <div className="p-5 md:p-6 relative">
                             <SummaryCard
                                 title={"Saldo Disponible"}
                                 amount={walletBalance}
                                 icon={Wallet}
-                                textStyle={"text-primary"}
+                                textStyle={"text-success"}
                                 info={"Saldo actualizado desde wallet"}
                             />
-                            <div className="mt-3 pt-3 border-t border-base-300/40 flex items-center gap-2">
-                                <span className="text-xs text-base-content/50 font-mono truncate" title={walletAddress ?? ""}>
-                                    {walletAddress ?? "—"}
-                                </span>
+                            <div className="mt-3 pt-4 border-t border-success/10 flex items-center gap-2.5">
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-success shrink-0"></span>
+                                    <span className="text-xs text-base-content/40 font-mono truncate" title={walletAddress ?? ""}>
+                                        {walletAddress ?? "—"}
+                                    </span>
+                                </div>
                                 <button
-                                    className="btn btn-ghost btn-xs btn-square shrink-0 text-base-content/40 hover:text-base-content/70 transition-colors"
-                                    onClick={() => walletAddress && navigator.clipboard.writeText(walletAddress)}
+                                    className="btn btn-ghost btn-xs btn-square shrink-0 text-base-content/40 hover:text-success/70 transition-all duration-200"
+                                    onClick={handleCopyAddress}
                                     title="Copiar dirección"
                                 >
-                                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                    </svg>
+                                    {copied ? (
+                                        <svg className="w-3.5 h-3.5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    ) : (
+                                        <Copy className="w-3.5 h-3.5" />
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -210,14 +246,14 @@ export default function Homepage() {
             {/* Modal */}
             {isTransactionModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
-                    <div className="w-full max-w-md rounded-2xl bg-base-100 shadow-2xl border border-base-300/60 overflow-hidden">
-                        <div className="px-6 pt-6 pb-2 border-b border-base-200/60">
+                    <div className="relative w-full max-w-md rounded-2xl bg-base-100 shadow-2xl border border-base-300/60 overflow-hidden">
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+                        <div className="absolute bottom-0 left-0 w-36 h-36 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+                        <div className="px-6 pt-6 pb-2 border-b border-base-200/60 relative">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-xl bg-primary/10">
-                                        <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                        </svg>
+                                    <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-inner shadow-primary/10">
+                                        <ArrowUpRight className="w-5 h-5 text-primary" />
                                     </div>
                                     <h3 className="font-bold text-lg">Nueva Transacción</h3>
                                 </div>
@@ -225,27 +261,25 @@ export default function Homepage() {
                                     className="btn btn-ghost btn-sm btn-square rounded-xl"
                                     onClick={() => setIsTransactionModalOpen(false)}
                                 >
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
+                                    <X className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>
 
-                        <div className="p-6 space-y-4">
+                        <div className="p-6 space-y-4 relative">
                             <div className="space-y-1.5">
-                                <label className="text-xs font-medium text-base-content/60">Tu Wallet</label>
+                                <label className="text-xs font-medium text-base-content/60 flex items-center gap-1.5">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
+                                    Tu Wallet
+                                </label>
                                 <div className="input input-bordered w-full bg-base-200/30 text-sm font-mono text-base-content/70 flex items-center gap-2 cursor-default pr-1">
-                                    <span className="w-2 h-2 rounded-full bg-success shrink-0"></span>
                                     <span className="truncate">{walletAddress ?? "—"}</span>
                                     <button
                                         className="btn btn-ghost btn-xs btn-square ml-auto shrink-0 text-base-content/40 hover:text-base-content/70 transition-colors"
                                         onClick={() => walletAddress && navigator.clipboard.writeText(walletAddress)}
                                         title="Copiar dirección"
                                     >
-                                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                        </svg>
+                                        <Copy className="w-3.5 h-3.5" />
                                     </button>
                                 </div>
                             </div>
@@ -274,7 +308,7 @@ export default function Homepage() {
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-xs font-medium text-base-content/60">Descripción (opcional)</label>
+                                <label className="text-xs font-medium text-base-content/60">Descripción <span className="text-base-content/30">(opcional)</span></label>
                                 <textarea
                                     className="textarea textarea-bordered w-full bg-base-200/50 focus:bg-base-100 transition-colors"
                                     placeholder="Agregá una descripción..."
@@ -286,13 +320,13 @@ export default function Homepage() {
                             </div>
 
                             {error && (
-                                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-error/10 text-error text-sm">
+                                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-error/10 text-error text-sm border border-error/10">
                                     <span>⚠</span> {error}
                                 </div>
                             )}
                         </div>
 
-                        <div className="px-6 pb-6 pt-1 flex gap-3 justify-end">
+                        <div className="px-6 pb-6 pt-1 flex gap-3 justify-end relative">
                             <button
                                 className="btn btn-ghost"
                                 onClick={() => setIsTransactionModalOpen(false)}
@@ -312,9 +346,7 @@ export default function Homepage() {
                                     </>
                                 ) : (
                                     <>
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                        </svg>
+                                        <ArrowUpRight className="w-4 h-4" />
                                         Enviar
                                     </>
                                 )}

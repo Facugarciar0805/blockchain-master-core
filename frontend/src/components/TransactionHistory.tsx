@@ -3,6 +3,7 @@ import type { TransactionType } from '../types/TransactionTypes.tsx'
 import { getAllTransactions } from "../api/TransactionApi.tsx";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getJwtPayload } from "../utils/jwt.ts";
+import { Search, History, AlertCircle, Inbox } from "lucide-react";
 
 type Tab = 'all' | 'incoming' | 'outgoing';
 
@@ -12,6 +13,7 @@ export default function TransactionHistory({ hasWallet }: { hasWallet: boolean }
     const [transactions, setTransactions] = useState<TransactionType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const loadTransactions = useCallback(async () => {
         return await getAllTransactions();
@@ -34,13 +36,22 @@ export default function TransactionHistory({ hasWallet }: { hasWallet: boolean }
     }, [loadTransactions]);
 
     const filteredTransactions = useMemo(() => {
-        if (activeTab === 'all') return transactions;
-        return transactions.filter(tx =>
-            activeTab === 'incoming'
-                ? tx.receiver_wallet_id === loggedUserWalletId
-                : tx.sender_wallet_id === loggedUserWalletId
-        );
-    }, [transactions, activeTab, loggedUserWalletId]);
+        let filtered = transactions;
+        if (activeTab === 'incoming') {
+            filtered = filtered.filter(tx => tx.receiver_wallet_id === loggedUserWalletId);
+        } else if (activeTab === 'outgoing') {
+            filtered = filtered.filter(tx => tx.sender_wallet_id === loggedUserWalletId);
+        }
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase();
+            filtered = filtered.filter(tx =>
+                tx.hash?.toLowerCase().includes(q) ||
+                tx.sender_wallet_id?.toLowerCase().includes(q) ||
+                tx.receiver_wallet_id?.toLowerCase().includes(q)
+            );
+        }
+        return filtered;
+    }, [transactions, activeTab, loggedUserWalletId, searchQuery]);
 
     const tabs: { key: Tab; label: string }[] = [
         { key: 'all', label: 'Todas' },
@@ -49,10 +60,15 @@ export default function TransactionHistory({ hasWallet }: { hasWallet: boolean }
     ];
 
     return (
-        <div className="rounded-xl bg-gradient-to-br from-base-100 to-base-200/50 shadow-sm border border-base-300/60 overflow-hidden">
-            <div className="p-5 sm:p-6 border-b border-base-300/50">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-base-100 to-base-200/50 shadow-sm border border-base-300/60">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/[0.02] rounded-full blur-3xl pointer-events-none"></div>
+            <div className="p-5 sm:p-6 border-b border-base-300/50 relative">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
                     <div>
+                        <div className="flex items-center gap-2 mb-0.5">
+                            <History className="w-4 h-4 text-primary/60" />
+                            <span className="text-[11px] font-semibold uppercase tracking-widest text-base-content/40">Historial</span>
+                        </div>
                         <h3 className="font-bold text-xl text-base-content tracking-tight">
                             {activeTab === 'all' ? 'Todas las Transacciones' : 'Últimos Movimientos'}
                         </h3>
@@ -61,8 +77,15 @@ export default function TransactionHistory({ hasWallet }: { hasWallet: boolean }
                         </p>
                     </div>
                     <div className="join w-full sm:w-auto shadow-sm">
-                        <input className="input input-bordered input-sm join-item w-full sm:w-56 bg-base-100/80 text-sm" placeholder="Buscar..." />
-                        <button className="btn btn-sm join-item btn-ghost border border-base-300/60">Buscar</button>
+                        <input
+                            className="input input-bordered input-sm join-item w-full sm:w-56 bg-base-100/80 text-sm"
+                            placeholder="Buscar por hash o dirección..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        <button className="btn btn-sm join-item btn-ghost border border-base-300/60" disabled>
+                            <Search className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
                 {hasWallet && (
@@ -84,7 +107,7 @@ export default function TransactionHistory({ hasWallet }: { hasWallet: boolean }
                 )}
             </div>
 
-            <div className="flex flex-col w-full">
+            <div className="flex flex-col w-full relative">
                 {isLoading ? (
                     <div className="p-12 flex flex-col items-center gap-3">
                         <span className="loading loading-spinner loading-md text-primary"></span>
@@ -93,7 +116,7 @@ export default function TransactionHistory({ hasWallet }: { hasWallet: boolean }
                 ) : error ? (
                     <div className="p-12 text-center">
                         <div className="p-3 rounded-full bg-error/10 w-fit mx-auto mb-3">
-                            <span className="text-error text-lg">!</span>
+                            <AlertCircle className="w-6 h-6 text-error" />
                         </div>
                         <p className="text-sm text-error font-medium">{error}</p>
                     </div>
@@ -119,9 +142,7 @@ export default function TransactionHistory({ hasWallet }: { hasWallet: boolean }
                 ) : (
                     <div className="p-12 text-center">
                         <div className="p-3 rounded-full bg-base-200/50 w-fit mx-auto mb-3">
-                            <svg className="w-6 h-6 text-base-content/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                            </svg>
+                            <Inbox className="w-6 h-6 text-base-content/30" />
                         </div>
                         <p className="text-sm text-base-content/40">
                             {activeTab === 'all'
