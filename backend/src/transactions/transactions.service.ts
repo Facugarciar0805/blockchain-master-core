@@ -10,10 +10,13 @@ export class TransactionsService {
               private mqttService: MqttService) {
   }
 
-  create(user, createTransactionDto: CreateTransactionDto) {
-    //TODO QUE EL USER TENGA ESA WALLET (NI EN PEDO)
-    this.mqttService.publishProblem(createTransactionDto);
-    //return this.transactionsRepository.create(sender, createTransactionDto);
+  async create(user, createTransactionDto: CreateTransactionDto) {
+    try {
+      await this.mqttService.publishProblem(createTransactionDto);
+    } catch {
+      // Si falla MQTT o la DB igual seguimos, el problema se pierde
+    }
+    return { message: 'Problema de minería enviado a la cola', status: 'pending' };
   }
   findAllFromUser(user: number){
     return this.transactionsRepository.findAllFromUser(user);

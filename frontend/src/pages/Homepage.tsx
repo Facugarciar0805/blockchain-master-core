@@ -20,6 +20,7 @@ export default function Homepage() {
     const [walletAddress, setWalletAddress] = useState<string | null>(null);
     const [isCreatingWallet, setIsCreatingWallet] = useState(false);
     const [walletLoaded, setWalletLoaded] = useState(false);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
 
     async function handleCreateTransaction() {
@@ -43,6 +44,8 @@ export default function Homepage() {
             setAmount("");
             setDescrip("");
             setIsTransactionModalOpen(false);
+            setSuccessMessage("Transacción enviada a la cola de minería");
+            setTimeout(() => setSuccessMessage(null), 4000);
         } catch (error) {
             setError("No se pudo crear la transacción");
         } finally {
@@ -114,6 +117,15 @@ export default function Homepage() {
                         Nueva Transacción
                     </button>
                 </div>
+
+                {successMessage && (
+                    <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-success/10 text-success text-sm border border-success/20">
+                        <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        {successMessage}
+                    </div>
+                )}
 
                 {/* Wallet Section */}
                 {walletLoaded && !hasWallet ? (
