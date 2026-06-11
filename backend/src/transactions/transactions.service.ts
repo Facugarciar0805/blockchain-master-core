@@ -11,6 +11,10 @@ export class TransactionsService {
   }
 
   async create(user, createTransactionDto: CreateTransactionDto) {
+    if (createTransactionDto.sender_wallet_id === createTransactionDto.receiver_wallet_id) {
+      throw new Error('No podés enviarte dinero a vos mismo');
+    }
+
     try {
       await this.mqttService.publishProblem(createTransactionDto);
     } catch {

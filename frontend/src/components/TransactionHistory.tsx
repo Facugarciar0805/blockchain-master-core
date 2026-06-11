@@ -72,7 +72,8 @@ export default function TransactionHistory({ hasWallet, walletAddress }: { hasWa
                             {activeTab === 'all' ? 'Todas las Transacciones' : 'Últimos Movimientos'}
                         </h3>
                         <p className="text-xs text-base-content/40 mt-0.5">
-                            {filteredTransactions.length} transaccione{filteredTransactions.length !== 1 ? 's' : ''} en total
+                            {transactions.length} transaccione{transactions.length !== 1 ? 's' : ''} en total
+                            {searchQuery.trim() && ` (${filteredTransactions.length} coinciden)`}
                         </p>
                     </div>
                     <div className="join w-full sm:w-auto shadow-sm">
