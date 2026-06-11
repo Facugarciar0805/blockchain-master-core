@@ -18,7 +18,7 @@ export class WalletRepositoryService {
         const body = {
             user_id: userId.toString(),
             address: `0x${userId}${Date.now().toString(16)}`,
-            balance: 0,
+            balance: 100,
             status: "active",
         };
         const response = await firstValueFrom(
