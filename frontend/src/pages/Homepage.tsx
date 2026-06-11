@@ -244,7 +244,7 @@ export default function Homepage() {
 
                 {/* Transactions */}
                 <div className="w-full">
-                    <TransactionHistory hasWallet={hasWallet} />
+                    <TransactionHistory hasWallet={hasWallet} walletAddress={walletAddress} />
                 </div>
             </div>
 

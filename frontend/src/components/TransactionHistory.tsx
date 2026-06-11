@@ -2,13 +2,12 @@ import Transaction from './Transaction.tsx'
 import type { TransactionType } from '../types/TransactionTypes.tsx'
 import { getAllTransactions } from "../api/TransactionApi.tsx";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getJwtPayload } from "../utils/jwt.ts";
 import { Search, History, AlertCircle, Inbox } from "lucide-react";
 
 type Tab = 'all' | 'incoming' | 'outgoing';
 
-export default function TransactionHistory({ hasWallet }: { hasWallet: boolean }) {
-    const loggedUserWalletId = getJwtPayload()?.sub ?? null;
+export default function TransactionHistory({ hasWallet, walletAddress }: { hasWallet: boolean; walletAddress: string | null }) {
+    const loggedUserWalletId = walletAddress;
     const [activeTab, setActiveTab] = useState<Tab>('all');
     const [transactions, setTransactions] = useState<TransactionType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
