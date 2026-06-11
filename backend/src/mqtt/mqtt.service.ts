@@ -115,6 +115,11 @@ export class MqttService implements OnModuleInit {
             const receiverWallet = await this.walletRepository.findByAddress(blockDto.receiver_wallet_id);
 
             if (senderWallet && receiverWallet) {
+                if (blockDto.amount <= 0) {
+                    this.logger.warn(`Monto inválido: ${blockDto.amount}`);
+                    return;
+                }
+
                 if (senderWallet.balance < blockDto.amount) {
                     this.logger.warn(`Saldo insuficiente en ${senderWallet.address}: ${senderWallet.balance} < ${blockDto.amount}`);
                     return;

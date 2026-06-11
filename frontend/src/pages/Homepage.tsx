@@ -31,6 +31,11 @@ export default function Homepage() {
             return;
         }
 
+        if (Number(amount) <= 0) {
+            setError("El monto debe ser mayor a 0");
+            return;
+        }
+
         if (Number(amount) > (walletBalance ?? 0)) {
             setError("Saldo insuficiente");
             return;
@@ -301,6 +306,7 @@ export default function Homepage() {
                                     className="input input-bordered w-full bg-base-200/50 focus:bg-base-100 transition-colors"
                                     placeholder="0.00"
                                     type="number"
+                                    min="0"
                                     value={amount}
                                     onChange={(e) => setAmount(e.target.value)}
                                     disabled={isSubmitting}
