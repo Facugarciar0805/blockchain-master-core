@@ -23,11 +23,19 @@ export class WalletRepositoryService {
     }
 
     async update(address: string, data: any) {
-        const body = { address, ...data };
-        const response = await firstValueFrom(
-            this.httpService.post(`${process.env.DATABASE_URL}/wallets`, body)
-        );
-        return response.data;
+        const existing = await this.findByAddress(address);
+        if (existing) {
+            const response = await firstValueFrom(
+                this.httpService.put(`${process.env.DATABASE_URL}/wallets/${address}`, data)
+            );
+            return response.data;
+        } else {
+            const body = { address, ...data };
+            const response = await firstValueFrom(
+                this.httpService.post(`${process.env.DATABASE_URL}/wallets`, body)
+            );
+            return response.data;
+        }
     }
 
     async create(userId: number) {
