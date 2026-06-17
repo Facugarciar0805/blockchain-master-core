@@ -5,6 +5,10 @@ import {WalletRepositoryService} from "../repository/wallet/wallet.repository.se
 export class WalletService {
     constructor(private walletRepository: WalletRepositoryService) {}
 
+    async getAllWallets() {
+        return this.walletRepository.findAll();
+    }
+
     async getMyWallet(userId: number) {
         const wallet = await this.walletRepository.findByUserId(userId);
         return wallet ?? null;

@@ -6,6 +6,13 @@ import {HttpService} from "@nestjs/axios";
 export class WalletRepositoryService {
     constructor(private httpService: HttpService) {}
 
+    async findAll() {
+        const response = await firstValueFrom(
+            this.httpService.get(`${process.env.DATABASE_URL}/wallets`)
+        );
+        return response.data;
+    }
+
     async findByUserId(userId: number) {
         const response = await firstValueFrom(
             this.httpService.get(`${process.env.DATABASE_URL}/wallets`)

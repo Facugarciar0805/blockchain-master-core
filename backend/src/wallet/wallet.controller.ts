@@ -7,6 +7,12 @@ import type {Request} from "express";
 export class WalletController {
     constructor(private readonly walletService: WalletService) {}
 
+    @Get()
+    @UseGuards(AuthGuard)
+    getAllWallets() {
+        return this.walletService.getAllWallets();
+    }
+
     @Get("me")
     @UseGuards(AuthGuard)
     getMyWallet(@Req() req: Request) {

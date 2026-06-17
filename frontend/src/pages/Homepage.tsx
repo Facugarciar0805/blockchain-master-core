@@ -4,6 +4,7 @@ import TransactionHistory from "../components/TransactionHistory.tsx";
 import { Wallet, LogOut, Copy, X, Hexagon, Send, CreditCard } from "lucide-react";
 import {createTransaction} from "../api/TransactionApi.tsx";
 import { getMyWallet, createWallet } from "../api/WalletApi.tsx";
+import WalletSelect from "../components/WalletSelect.tsx";
 import { getJwtPayload } from "../utils/jwt.ts";
 
 export default function Homepage() {
@@ -324,11 +325,10 @@ export default function Homepage() {
 
                             <div className="space-y-1.5">
                                 <label className="text-xs font-medium text-white/50">Wallet del destinatario</label>
-                                <input
-                                    className="input w-full bg-white/5 border-white/10 text-white/80 placeholder:text-white/20 focus:border-emerald-500/30 focus:outline-none transition-all"
-                                    placeholder="0x..."
+                                <WalletSelect
                                     value={receiverWalletId}
-                                    onChange={(e) => setReceiverWalletId(e.target.value)}
+                                    onChange={setReceiverWalletId}
+                                    excludeAddress={walletAddress ?? undefined}
                                     disabled={isSubmitting}
                                 />
                             </div>
