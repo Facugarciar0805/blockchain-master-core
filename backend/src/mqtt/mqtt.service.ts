@@ -25,7 +25,7 @@ export class MqttService implements OnModuleInit {
     }
 
     private connectToBroker() {
-        const brokerUrl = 'mqtt://172.22.43.231:1883';
+        const brokerUrl = 'mqtt://172.22.41.119:1883';
 
         this.logger.log(`Conectando al broker MQTT en ${brokerUrl}...`);
         this.mqttClient = mqtt.connect(brokerUrl);
