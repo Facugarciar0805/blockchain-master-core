@@ -60,12 +60,12 @@ export default function TransactionHistory({ hasWallet, walletAddress }: { hasWa
 
     return (
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-base-100 to-base-200/50 shadow-sm border border-base-300/60">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/[0.02] rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/[0.02] rounded-full blur-3xl pointer-events-none"></div>
             <div className="p-5 sm:p-6 border-b border-base-300/50 relative">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
                     <div>
                         <div className="flex items-center gap-2 mb-0.5">
-                            <History className="w-4 h-4 text-primary/60" />
+                            <History className="w-4 h-4 text-emerald-400/60" />
                             <span className="text-[11px] font-semibold uppercase tracking-widest text-base-content/40">Historial</span>
                         </div>
                         <h3 className="font-bold text-xl text-base-content tracking-tight">
@@ -110,7 +110,7 @@ export default function TransactionHistory({ hasWallet, walletAddress }: { hasWa
             <div className="flex flex-col w-full relative">
                 {isLoading ? (
                     <div className="p-12 flex flex-col items-center gap-3">
-                        <span className="loading loading-spinner loading-md text-primary"></span>
+                        <span className="loading loading-spinner loading-md text-emerald-400"></span>
                         <span className="text-xs text-base-content/40">Cargando transacciones...</span>
                     </div>
                 ) : error ? (

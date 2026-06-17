@@ -183,14 +183,14 @@ export default function Homepage() {
 
                 {/* Wallet Section */}
                 {walletLoaded && !hasWallet ? (
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/15 via-primary/[0.07] to-base-200 border border-primary/20 shadow-xl shadow-primary/5">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
-                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/15 via-emerald-500/[0.07] to-base-200 border border-emerald-500/20 shadow-xl shadow-emerald-500/5">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl"></div>
                         <div className="hero-content text-center py-14 md:py-20 relative">
                             <div className="max-w-md">
                                 <div className="flex justify-center mb-6">
-                                    <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-inner shadow-primary/10">
-                                        <Wallet className="w-10 h-10 text-primary" />
+                                    <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 shadow-inner shadow-emerald-500/10">
+                                        <Wallet className="w-10 h-10 text-emerald-400" />
                                     </div>
                                 </div>
                                 <h2 className="text-2xl md:text-3xl font-bold">Comienza a usar la Blockchain</h2>
@@ -204,7 +204,7 @@ export default function Homepage() {
                                     </div>
                                 )}
                                 <button
-                                    className="btn btn-primary btn-lg mt-7 shadow-lg shadow-primary/30 hover:shadow-primary/40 transition-all duration-300 gap-2"
+                                    className="btn bg-emerald-500 hover:bg-emerald-400 text-white border-none shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40 transition-all duration-300 gap-2 btn-lg mt-7"
                                     onClick={handleCreateWallet}
                                     disabled={isCreatingWallet}
                                 >

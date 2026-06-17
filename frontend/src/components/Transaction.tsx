@@ -11,8 +11,8 @@ export default function Transaction({ transaction, loggedUserWalletId, compact }
 
     if (compact) {
         return (
-            <div className="grid grid-cols-12 gap-2 items-center p-3.5 border-b border-base-200/80 bg-base-100 hover:bg-gradient-to-r hover:from-primary/[0.02] hover:to-transparent transition-all duration-200 text-sm group">
-                <div className="col-span-3 font-mono text-xs text-base-content/50 truncate group-hover:text-primary/70 transition-colors" title={hash}>
+            <div className="grid grid-cols-12 gap-2 items-center p-3.5 border-b border-base-200/80 bg-base-100 hover:bg-gradient-to-r hover:from-emerald-500/[0.02] hover:to-transparent transition-all duration-200 text-sm group">
+                <div className="col-span-3 font-mono text-xs text-base-content/50 truncate group-hover:text-emerald-400/70 transition-colors" title={hash}>
                     {hash ? hash.slice(0, 14) + '...' : '—'}
                 </div>
                 <div className="col-span-4 truncate flex items-center gap-1">
@@ -45,7 +45,7 @@ export default function Transaction({ transaction, loggedUserWalletId, compact }
     const iconBgClass = isSender ? 'bg-error/10 text-error' : 'bg-success/10 text-success';
 
     return (
-        <div className="flex items-center justify-between p-4 border-b border-base-200/80 bg-base-100 hover:bg-gradient-to-r hover:from-primary/[0.02] hover:to-transparent transition-all duration-200 group">
+        <div className="flex items-center justify-between p-4 border-b border-base-200/80 bg-base-100 hover:bg-gradient-to-r hover:from-emerald-500/[0.02] hover:to-transparent transition-all duration-200 group">
             <div className="flex items-center gap-3.5">
                 <div className={`flex items-center justify-center w-10 h-10 rounded-xl transition-transform group-hover:scale-110 ${iconBgClass}`}>
                     {isSender ? (

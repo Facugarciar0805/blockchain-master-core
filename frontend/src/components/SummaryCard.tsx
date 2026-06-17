@@ -9,14 +9,14 @@ export default function SummaryCard({title, amount, icon: Icon, textStyle, info}
     return (
         <div className="stat relative">
             <div className={`stat-figure ${textStyle}`}>
-                <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-inner shadow-primary/10 backdrop-blur-sm">
+                <div className="p-2.5 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 shadow-inner shadow-emerald-500/10 backdrop-blur-sm">
                     <Icon className="w-6 h-6" />
                 </div>
             </div>
             <div className="stat-title text-sm font-medium text-base-content/60 tracking-wide uppercase">{title}</div>
             <div className={`stat-value text-3xl md:text-4xl mt-1 font-bold tracking-tight ${textStyle}`}>
                 {amount === null ? (
-                    <span className="loading loading-dots loading-md text-primary"></span>
+                    <span className="loading loading-dots loading-md text-emerald-400"></span>
                 ) : (
                     `$${amount.toLocaleString()}`
                 )}
