@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getPendingQueue, type PendingQueueResponse } from "../api/MiningApi.tsx";
-import { ListOrdered, Loader, Zap, Hash } from "lucide-react";
+import { ListOrdered, Loader, Zap, Hash, Cpu } from "lucide-react";
 
 export default function PendingQueue() {
     const [queue, setQueue] = useState<PendingQueueResponse | null>(null);
@@ -22,15 +22,42 @@ export default function PendingQueue() {
 
     if (!queue || (queue.count === 0 && !queue.isProcessing)) return null;
 
+    const miningTx = queue.isProcessing ? queue.currentMining : null;
+
     return (
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-500/10 via-teal-500/[0.04] to-base-200 border border-teal-500/20 shadow-sm">
             <div className="absolute top-0 right-0 w-48 h-48 bg-teal-500/[0.03] rounded-full blur-3xl pointer-events-none"></div>
-            <div className="p-5 sm:p-6 relative">
+            <div className="p-5 sm:p-6 relative space-y-4">
                 <div className="flex items-center gap-2 mb-0.5">
                     <ListOrdered className="w-4 h-4 text-teal-400/60" />
                     <span className="text-[11px] font-semibold uppercase tracking-widest text-base-content/40">Cola de minería</span>
                 </div>
-                <div className="flex items-center justify-between mt-3">
+
+                {miningTx && (
+                    <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Cpu className="w-4 h-4 text-emerald-400 animate-pulse" />
+                            <span className="text-sm font-semibold text-emerald-300">Minando ahora</span>
+                            <Loader className="w-3.5 h-3.5 text-emerald-400 animate-spin ml-auto" />
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-2 min-w-0">
+                                <span className="font-mono text-xs text-emerald-200/70 truncate">
+                                    {miningTx.sender_wallet_id.slice(0, 8)}...
+                                </span>
+                                <span className="text-emerald-200/40">→</span>
+                                <span className="font-mono text-xs text-emerald-200/70 truncate">
+                                    {miningTx.receiver_wallet_id.slice(0, 8)}...
+                                </span>
+                            </div>
+                            <span className="font-semibold text-xs text-emerald-200 tabular-nums">
+                                ${miningTx.amount.toLocaleString()}
+                            </span>
+                        </div>
+                    </div>
+                )}
+
+                <div className="flex items-center justify-between">
                     <div className="flex items-center gap-6">
                         <div>
                             <p className="text-2xl font-bold text-white/90">{queue.count}</p>
@@ -58,7 +85,7 @@ export default function PendingQueue() {
                 </div>
 
                 {queue.count > 0 && (
-                    <div className="mt-4 space-y-1.5">
+                    <div className="space-y-1.5">
                         {queue.transactions.map((tx, i) => (
                             <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.03] border border-white/5 text-sm">
                                 <div className="flex items-center gap-2 min-w-0">

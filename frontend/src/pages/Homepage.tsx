@@ -112,6 +112,8 @@ export default function Homepage() {
 
     useEffect(() => {
         void loadWallet();
+        const interval = setInterval(loadWallet, 5000);
+        return () => clearInterval(interval);
     }, []);
 
 

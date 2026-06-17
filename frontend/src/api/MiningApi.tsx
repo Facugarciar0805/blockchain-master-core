@@ -6,6 +6,7 @@ export interface PendingQueueResponse {
     count: number;
     transactions: CreateTransactionRequest[];
     isProcessing: boolean;
+    currentMining: CreateTransactionRequest | null;
     currentPrevHash: string;
 }
 

@@ -19,19 +19,29 @@ export default function TransactionHistory({ hasWallet, walletAddress }: { hasWa
     }, []);
 
     useEffect(() => {
+        let mounted = true;
+
         const fetchTransactions = async () => {
             try {
-                setIsLoading(true);
-                setError(null);
                 const data = await loadTransactions();
-                setTransactions(data);
+                if (mounted) {
+                    setTransactions(data);
+                    setIsLoading(false);
+                }
             } catch (e) {
-                setError('No se pudieron cargar las transacciones');
-            } finally {
-                setIsLoading(false);
+                if (mounted) {
+                    setError('No se pudieron cargar las transacciones');
+                    setIsLoading(false);
+                }
             }
         };
+
         void fetchTransactions();
+        const interval = setInterval(fetchTransactions, 5000);
+        return () => {
+            mounted = false;
+            clearInterval(interval);
+        };
     }, [loadTransactions]);
 
     const filteredTransactions = useMemo(() => {

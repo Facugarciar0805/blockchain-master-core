@@ -16,6 +16,7 @@ export class MqttService implements OnModuleInit {
     private nextProblemId: number = 1;
     private isProcessing = false;
     private pendingQueue: CreateTransactionDto[] = [];
+    private currentMining: CreateTransactionDto | null = null;
 
     constructor(transactionsRepository: TransactionsRepositoryService,
                 walletRepository: WalletRepositoryService) {
@@ -80,6 +81,7 @@ export class MqttService implements OnModuleInit {
             count: this.pendingQueue.length,
             transactions: [...this.pendingQueue],
             isProcessing: this.isProcessing,
+            currentMining: this.currentMining,
             currentPrevHash: this.prev_hash,
         };
     }
@@ -96,6 +98,7 @@ export class MqttService implements OnModuleInit {
     }
 
     private sendWork(transactionData: CreateTransactionDto) {
+        this.currentMining = transactionData;
         const topic = 'mining/work';
         const blockData = JSON.stringify({
             ...transactionData,
@@ -181,6 +184,7 @@ export class MqttService implements OnModuleInit {
             this.processQueue();
         } catch (error) {
             this.logger.error('Error procesando solución minada:', error);
+            this.currentMining = null;
             this.isProcessing = false;
         }
     }
@@ -191,6 +195,7 @@ export class MqttService implements OnModuleInit {
             this.logger.log(`Enviando siguiente de la cola (quedan ${this.pendingQueue.length})`);
             this.sendWork(next);
         } else {
+            this.currentMining = null;
             this.isProcessing = false;
         }
     }
