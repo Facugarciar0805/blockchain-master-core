@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TransactionHistory from "../components/TransactionHistory.tsx";
+import PendingQueue from "../components/PendingQueue.tsx";
 import { Wallet, LogOut, Copy, X, Hexagon, Send, CreditCard } from "lucide-react";
 import {createTransaction} from "../api/TransactionApi.tsx";
 import { getMyWallet, createWallet } from "../api/WalletApi.tsx";
@@ -274,6 +275,9 @@ export default function Homepage() {
                         </div>
                     </div>
                 ) : null}
+
+                {/* Pending Queue */}
+                <PendingQueue />
 
                 {/* Transactions */}
                 <div className="w-full">

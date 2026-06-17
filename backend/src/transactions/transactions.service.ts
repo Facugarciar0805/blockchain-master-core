@@ -10,6 +10,10 @@ export class TransactionsService {
               private mqttService: MqttService) {
   }
 
+  getPendingQueue() {
+    return this.mqttService.getPendingQueue();
+  }
+
   async create(user, createTransactionDto: CreateTransactionDto) {
     if (createTransactionDto.sender_wallet_id === createTransactionDto.receiver_wallet_id) {
       throw new Error('No podés enviarte dinero a vos mismo');

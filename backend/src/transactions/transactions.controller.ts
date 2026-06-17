@@ -15,6 +15,11 @@ export class TransactionsController {
         return this.transactionsService.create(user,createTransactionDto);
     }
 
+    @Get('queue')
+    getPendingQueue() {
+        return this.transactionsService.getPendingQueue();
+    }
+
     @Get()
     findAll() {
         return this.transactionsService.findAll();

@@ -14,6 +14,8 @@ export class MqttService implements OnModuleInit {
     private walletRepository: WalletRepositoryService
     private prev_hash: string = '0x000_GENESIS_HASH';
     private nextProblemId: number = 1;
+    private isProcessing = false;
+    private pendingQueue: CreateTransactionDto[] = [];
 
     constructor(transactionsRepository: TransactionsRepositoryService,
                 walletRepository: WalletRepositoryService) {
@@ -39,7 +41,7 @@ export class MqttService implements OnModuleInit {
     }
 
     private connectToBroker() {
-        const brokerUrl = 'mqtt://172.22.41.119:1883';
+        const brokerUrl = 'mqtt://52.205.116.199:1883';
 
         this.logger.log(`Conectando al broker MQTT en ${brokerUrl}...`);
         this.mqttClient = mqtt.connect(brokerUrl);
@@ -73,9 +75,27 @@ export class MqttService implements OnModuleInit {
         });
     }
 
-    // Métod0 público que usará tu controlador para mandar el problema
-    public async publishProblem(transactionData: CreateTransactionDto) {
+    getPendingQueue() {
+        return {
+            count: this.pendingQueue.length,
+            transactions: [...this.pendingQueue],
+            isProcessing: this.isProcessing,
+            currentPrevHash: this.prev_hash,
+        };
+    }
 
+    public async publishProblem(transactionData: CreateTransactionDto) {
+        if (this.isProcessing) {
+            this.pendingQueue.push(transactionData);
+            this.logger.log(`Transacción encolada (cola: ${this.pendingQueue.length})`);
+            return;
+        }
+
+        this.isProcessing = true;
+        this.sendWork(transactionData);
+    }
+
+    private sendWork(transactionData: CreateTransactionDto) {
         const topic = 'mining/work';
         const blockData = JSON.stringify({
             ...transactionData,
@@ -87,7 +107,7 @@ export class MqttService implements OnModuleInit {
         const payload = JSON.stringify({
             data: blockData,
             id: problemId,
-            diff: 3,
+            diff: 4,
             required: 1
         })
 
@@ -125,16 +145,19 @@ export class MqttService implements OnModuleInit {
             if (senderWallet && receiverWallet) {
                 if (blockDto.amount <= 0) {
                     this.logger.warn(`Monto inválido: ${blockDto.amount}`);
+                    this.processQueue();
                     return;
                 }
 
                 if (blockDto.sender_wallet_id === blockDto.receiver_wallet_id) {
                     this.logger.warn(`El sender y receiver son la misma wallet: ${blockDto.sender_wallet_id}`);
+                    this.processQueue();
                     return;
                 }
 
                 if (senderWallet.balance < blockDto.amount) {
                     this.logger.warn(`Saldo insuficiente en ${senderWallet.address}: ${senderWallet.balance} < ${blockDto.amount}`);
+                    this.processQueue();
                     return;
                 }
 
@@ -154,8 +177,21 @@ export class MqttService implements OnModuleInit {
             this.prev_hash = hash;
 
             this.logger.log(`Bloque minado guardado: workId=${workId} hash=${hash} minero=${miner} nonce=${nonce}`);
+
+            this.processQueue();
         } catch (error) {
             this.logger.error('Error procesando solución minada:', error);
+            this.isProcessing = false;
+        }
+    }
+
+    private processQueue() {
+        if (this.pendingQueue.length > 0) {
+            const next = this.pendingQueue.shift()!;
+            this.logger.log(`Enviando siguiente de la cola (quedan ${this.pendingQueue.length})`);
+            this.sendWork(next);
+        } else {
+            this.isProcessing = false;
         }
     }
 }
