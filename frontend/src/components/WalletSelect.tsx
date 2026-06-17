@@ -201,7 +201,7 @@ export default function WalletSelect({ value, onChange, excludeAddress, disabled
             {open && !isPending && createPortal(
                 <div
                     ref={popoverRef}
-                    className="fixed z-[9999] rounded-xl border border-white/10 bg-[#0f172a] shadow-xl overflow-hidden"
+                    className="fixed z-[9999] rounded-xl border border-white/10 bg-[#161a23] shadow-xl overflow-hidden"
                     style={{ top: coords.top, left: coords.left, width: coords.width }}
                 >
                     {filtered.length === 0 ? (
@@ -218,7 +218,7 @@ export default function WalletSelect({ value, onChange, excludeAddress, disabled
                                         onClick={() => selectOption(w)}
                                         onMouseEnter={() => setHighlighted(i)}
                                         className={`
-                                            px-4 py-2.5 text-sm cursor-pointer transition-colors
+                                            px-4 py-2.5 text-sm cursor-pointer transition-colors border-b border-white/5 last:border-b-0
                                             ${highlighted === i
                                                 ? "bg-emerald-500/10 text-emerald-400"
                                                 : isSelected
@@ -227,9 +227,9 @@ export default function WalletSelect({ value, onChange, excludeAddress, disabled
                                             }
                                         `}
                                     >
-                                        <div className="flex items-center justify-between">
-                                            <span>{w.username}</span>
-                                            <span className="text-xs text-white/30 font-mono">{w.address}</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-white/80">{w.username}</span>
+                                            <span className="text-xs text-white/30 font-mono truncate mt-0.5">{w.address}</span>
                                         </div>
                                     </li>
                                 );
