@@ -8,8 +8,8 @@ interface SummaryCardProps {
 export default function SummaryCard({title, amount, icon: Icon, textStyle, info}: SummaryCardProps) {
     return (
         <div className="stat relative">
-            <div className={`stat-figure ${textStyle} opacity-80`}>
-                <div className="p-2.5 rounded-xl bg-primary/10 backdrop-blur-sm">
+            <div className={`stat-figure ${textStyle}`}>
+                <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-inner shadow-primary/10 backdrop-blur-sm">
                     <Icon className="w-6 h-6" />
                 </div>
             </div>

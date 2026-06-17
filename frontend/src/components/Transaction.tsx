@@ -1,4 +1,5 @@
 import type { TransactionItemProps } from '../types/TransactionTypes.tsx'
+import { ArrowUp, ArrowDown, CheckCircle, Clock } from "lucide-react";
 
 export default function Transaction({ transaction, loggedUserWalletId, compact }: TransactionItemProps) {
     const { amount, sender_wallet_id, receiver_wallet_id, descrip, hash, status } = transaction;
@@ -19,7 +20,7 @@ export default function Transaction({ transaction, loggedUserWalletId, compact }
                     <span className="text-base-content/30 text-xs">→</span>
                     <span className="font-mono text-xs text-base-content/80">{receiver_wallet_id?.slice(0, 8) || '...'}</span>
                 </div>
-                <div className="col-span-3 text-right font-semibold text-sm">
+                <div className="col-span-3 text-right font-semibold text-sm tabular-nums">
                     ${amount.toLocaleString()}
                 </div>
                 <div className="col-span-2 text-right">
@@ -28,7 +29,11 @@ export default function Transaction({ transaction, loggedUserWalletId, compact }
                             ? 'bg-success/10 text-success'
                             : 'bg-warning/10 text-warning'
                     }`}>
-                        <span className={`w-1 h-1 rounded-full ${status === 'confirmed' ? 'bg-success' : 'bg-warning'}`}></span>
+                        {status === 'confirmed' ? (
+                            <CheckCircle className="w-2.5 h-2.5" />
+                        ) : (
+                            <Clock className="w-2.5 h-2.5" />
+                        )}
                         {status === 'confirmed' ? 'Confirmado' : 'Pendiente'}
                     </span>
                 </div>
@@ -38,13 +43,16 @@ export default function Transaction({ transaction, loggedUserWalletId, compact }
 
     const title = isSender ? `Enviado a ${receiver_wallet_id?.slice(0, 8)}...` : `Recibido de ${sender_wallet_id?.slice(0, 8)}...`;
     const iconBgClass = isSender ? 'bg-error/10 text-error' : 'bg-success/10 text-success';
-    const icon = isSender ? '↑' : '↓';
 
     return (
         <div className="flex items-center justify-between p-4 border-b border-base-200/80 bg-base-100 hover:bg-gradient-to-r hover:from-primary/[0.02] hover:to-transparent transition-all duration-200 group">
             <div className="flex items-center gap-3.5">
-                <div className={`flex items-center justify-center w-10 h-10 rounded-xl font-bold text-sm transition-transform group-hover:scale-110 ${iconBgClass}`}>
-                    {icon}
+                <div className={`flex items-center justify-center w-10 h-10 rounded-xl transition-transform group-hover:scale-110 ${iconBgClass}`}>
+                    {isSender ? (
+                        <ArrowUp className="w-5 h-5" />
+                    ) : (
+                        <ArrowDown className="w-5 h-5" />
+                    )}
                 </div>
 
                 <div className="flex flex-col">

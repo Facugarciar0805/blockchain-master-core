@@ -12,7 +12,8 @@ export class MqttService implements OnModuleInit {
     private readonly logger = new Logger(MqttService.name);
     private transactionsRepository: TransactionsRepositoryService
     private walletRepository: WalletRepositoryService
-    private prev_hash: string | null = null;
+    private prev_hash: string = '0x000_GENESIS_HASH';
+    private nextProblemId: number = 1;
 
     constructor(transactionsRepository: TransactionsRepositoryService,
                 walletRepository: WalletRepositoryService) {
@@ -20,8 +21,21 @@ export class MqttService implements OnModuleInit {
         this.walletRepository = walletRepository;
     }
 
-    onModuleInit() {
+    async onModuleInit() {
+        await this.initPrevHash();
         this.connectToBroker();
+    }
+
+    private async initPrevHash() {
+        try {
+            const last = await this.transactionsRepository.findLast();
+            if (last && last.hash) {
+                this.prev_hash = last.hash;
+                this.logger.log(`prev_hash inicializado desde DB: ${this.prev_hash}`);
+            }
+        } catch {
+            this.logger.warn('No se pudo obtener el último hash de la DB, usando genesis');
+        }
     }
 
     private connectToBroker() {
@@ -62,11 +76,6 @@ export class MqttService implements OnModuleInit {
     // Métod0 público que usará tu controlador para mandar el problema
     public async publishProblem(transactionData: CreateTransactionDto) {
 
-        if (!this.prev_hash) {
-            const last = await this.transactionsRepository.findLast();
-            this.prev_hash = last && last.hash ? last.hash : '0x000_GENESIS_HASH';
-        }
-
         const topic = 'mining/work';
         const blockData = JSON.stringify({
             ...transactionData,
@@ -74,9 +83,10 @@ export class MqttService implements OnModuleInit {
             status: 'pending'
         });
 
+        const problemId = this.nextProblemId++;
         const payload = JSON.stringify({
             data: blockData,
-            id: 1,
+            id: problemId,
             diff: 3,
             required: 1
         })
@@ -109,17 +119,32 @@ export class MqttService implements OnModuleInit {
             blockDto.nonce = nonce;
             blockDto.status = 'confirmed';
 
-            await this.transactionsRepository.createBlock(blockDto);
-
             const senderWallet = await this.walletRepository.findByAddress(blockDto.sender_wallet_id);
             const receiverWallet = await this.walletRepository.findByAddress(blockDto.receiver_wallet_id);
 
             if (senderWallet && receiverWallet) {
+                if (blockDto.amount <= 0) {
+                    this.logger.warn(`Monto inválido: ${blockDto.amount}`);
+                    return;
+                }
+
+                if (blockDto.sender_wallet_id === blockDto.receiver_wallet_id) {
+                    this.logger.warn(`El sender y receiver son la misma wallet: ${blockDto.sender_wallet_id}`);
+                    return;
+                }
+
+                if (senderWallet.balance < blockDto.amount) {
+                    this.logger.warn(`Saldo insuficiente en ${senderWallet.address}: ${senderWallet.balance} < ${blockDto.amount}`);
+                    return;
+                }
+
                 senderWallet.balance -= blockDto.amount;
                 await this.walletRepository.update(senderWallet.address, senderWallet);
 
                 receiverWallet.balance += blockDto.amount;
                 await this.walletRepository.update(receiverWallet.address, receiverWallet);
+
+                await this.transactionsRepository.createBlock(blockDto);
 
                 this.logger.log(`Balances actualizados: -${blockDto.amount} al sender, +${blockDto.amount} al receiver`);
             } else {
