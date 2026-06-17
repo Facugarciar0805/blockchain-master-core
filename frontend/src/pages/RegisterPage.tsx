@@ -50,29 +50,32 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#0a0e17] flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="min-h-screen bg-[#0a0e17] relative overflow-hidden">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-40 -right-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px]"></div>
                 <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px]"></div>
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[150px]"></div>
             </div>
 
-            <div className="relative w-full max-w-sm">
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center gap-2.5">
+            <div className="relative max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-6 md:py-8">
+                <div className="flex items-center">
+                    <div className="flex items-center gap-3">
                         <div className="p-2 rounded-xl bg-emerald-500/10">
-                            <Hexagon className="w-6 h-6 text-emerald-400" />
+                            <Hexagon className="w-5 h-5 text-emerald-400" />
                         </div>
-                        <span className="text-xl font-bold tracking-tight text-white/90">NovaChain</span>
+                        <span className="text-lg font-bold tracking-tight text-white/80 hidden sm:inline">NovaChain</span>
                     </div>
                 </div>
+            </div>
 
-                <div className="relative glass-card rounded-2xl p-8">
-                    <div className="flex justify-center mb-6">
-                        <div className="p-3 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 shadow-inner shadow-emerald-500/10">
-                            <UserPlus className="w-7 h-7 text-emerald-400" />
-                        </div>
-                    </div>
+            <div className="flex items-center justify-center p-4">
+                <div className="relative w-full max-w-sm">
+                    <div className="relative glass-card rounded-2xl p-8">
+                    {/*<div className="flex justify-center mb-6">*/}
+                    {/*    <div className="p-3 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 shadow-inner shadow-emerald-500/10">*/}
+                    {/*        <UserPlus className="w-7 h-7 text-emerald-400" />*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
                     <h2 className="text-2xl font-bold text-center tracking-tight text-white/90">Crear Cuenta</h2>
                     <p className="text-sm text-white/40 text-center mt-1">Registrate en la red</p>
 
@@ -152,5 +155,6 @@ export default function RegisterPage() {
                 </div>
             </div>
         </div>
+    </div>
     );
 }

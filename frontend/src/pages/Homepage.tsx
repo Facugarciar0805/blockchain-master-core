@@ -134,10 +134,9 @@ export default function Homepage() {
                     <div className="flex items-center gap-4">
                         <div className="text-right hidden sm:block">
                             <p className="text-sm font-medium text-white/80">{user?.username ?? "Usuario"}</p>
-                            <p className="text-xs text-white/40">Dashboard</p>
                         </div>
                         <button
-                            className="btn btn-sm rounded-full bg-white/5 border-white/10 text-white/50 hover:text-white/80 hover:bg-white/10 transition-all"
+                            className="btn btn-xs rounded-full bg-white/5 border-white/10 text-white/50 hover:text-white/80 hover:bg-white/10 transition-all"
                             onClick={handleLogout}
                         >
                             <LogOut className="w-3.5 h-3.5" />
